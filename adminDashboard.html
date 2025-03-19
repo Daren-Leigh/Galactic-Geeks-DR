@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,9 +11,9 @@
             background-color: #3f3751;
             color: white;
             font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
             padding: 0;
+            text-align: center;
         }
         .header {
             background-color: #3f3751;
@@ -28,6 +30,16 @@
             align-items: center;
             gap: 15px;
             margin-right: 20px;
+        }
+        .icons button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .icons img {
+            width: 50px;
+            height: 50px;
         }
         .icons div {
             background-color: transparent;
@@ -59,7 +71,6 @@
         .resource {
             display: flex;
             justify-content: space-between;
-
             width: 60%;
             margin: 10px;
             padding: 15px;
@@ -70,98 +81,79 @@
             color: black;
             padding: 10px;
         }
-
         .resource div:nth-child(2) {
             flex-grow: 2;
             text-align: center;
         }
-
-/* General Modal Styles */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4); /* Black background with transparency */
-}
-
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  border-radius: 8px;
-  width: 50%;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Close button styling */
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-}
-
-button {
-  cursor: pointer;
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-form label {
-  font-weight: bold;
-}
-
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 50%;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+        button {
+            cursor: pointer;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        form label {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <div>StudyLocker<img src="images/11910998_resized.png" ></div>
+        <div>StudyLocker<img src="images/11910998_resized.png"></div>
         <div class="icons">
-            <div><button type="button"onclick="alert('Menu Button clicked!')">
-       <!--Add the menu code here-->
-                <img src="images/Screenshot (267).ico"
-                "Button Image" style="width: 50px; height: 50px;">
-                    </button>
-        </div>
-            <div><button type="button"onclick="alert('Email Button clicked!')">
-                <a href="#"><!--Add the url for the email here-->
-                <img src="images/Screenshot (268).ico"
-                "Button Image" style="width: 50px; height: 50px;">
-
-            </button></div>
-            <div><button type="button"onclick="alert('Notification Button clicked!')">
-<!--Add the menu code here-->
-                <img src="images/Screenshot (269).ico"
-                "Button Image" style="width: 50px; height: 50px;">
-            </button></div>
-            <div>|</div>
-            <div><button type="button"onclick="alert('User Profile Button clicked!')">
-                <a href="#"><!--Add the url for the User Profile here-->
-                <img src="images/Screenshot (270).ico"
-                "Button Image" style="width: 50px; height: 50px;">
-
+            <button onclick="alert('Menu Button clicked!')">
+                <img src="images/Screenshot (267).ico" alt="Menu">
             </button>
-            </div>
+            <a href="#">
+                <button onclick="alert('Email Button clicked!')">
+                    <img src="images/Screenshot (268).ico" alt="Email">
+                </button>
+            </a>
+            <button onclick="alert('Notification Button clicked!')">
+                <img src="images/Screenshot (269).ico" alt="Notification">
+            </button>
+            <div>|</div>
+            <a href="#">
+                <button onclick="alert('User Profile Button clicked!')">
+                    <img src="images/Screenshot (270).ico" alt="Profile">
+                </button>
+            </a>
         </div>
     </div>
     <div class="nav-bar">
