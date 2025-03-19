@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -208,7 +206,35 @@
           </form>
         </div>
       </div>
+<!-- Resource Selection Modal -->
+<div id="selectResourceModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSelectModal()">&times;</span>
+        <h2>Select a Resource to Edit</h2>
+        <ul id="resourceList"></ul> <!-- List of selectable resources -->
+    </div>
+</div>
+<div id="editResourceModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Edit Resource</h2>
+        <form id="editResourceForm">
+            <label for="editResourceName">Resource Name:</label>
+            <input type="text" id="editResourceName" required><br><br>
 
+            <label for="editResourceDetails">Resource Details:</label>
+            <textarea id="editResourceDetails" rows="4" required></textarea><br><br>
+
+            <label for="editResourceRequestId">Resource Request ID:</label>
+            <input type="number" id="editResourceRequestId" required><br><br>
+
+            <label for="editAdditionalDetails">Additional Details:</label>
+            <textarea id="editAdditionalDetails" rows="4"></textarea><br><br>
+
+            <button type="button" onclick="saveResource()">Save Changes</button>
+        </form>
+    </div>
+</div>
     <script>
 
 
@@ -299,29 +325,63 @@
     modal.style.display = "none";
     resetForm();
   });
+
 });
         }
+
+        let selectedResource = null;
+
+
         function alterResources(element) {
-            selectedResource = element;
-            document.getElementById("editResourceName").value = element.children[0].innerText;
-            document.getElementById("editResourceDetails").value = element.children[1].innerText;
-            document.getElementById("editAdditionalDetails").value = element.children[2].innerText;
-            document.getElementById("editResourceRequestId").value = element.children[3].innerText;
-            document.getElementById("pdfUpload").style.display = "block";
 
+            const modal = document.getElementById("selectResourceModal");
+    const resourceList = document.getElementById("resourceList");
+    resourceList.innerHTML = ""; // Clear previous entries
 
+    // Get all resources
+    const resources = document.querySelectorAll(".resource");
+
+    // Populate the list
+    resources.forEach((resource, index) => {
+        const listItem = document.createElement("li");
+        listItem.textContent = resource.children[0].innerText; // Resource name
+        listItem.style.cursor = "pointer";
+        listItem.style.padding = "10px";
+        listItem.style.borderBottom = "1px solid #ccc";
+
+        // When a resource is clicked, open the edit modal
+        listItem.addEventListener("click", () => {
+            selectResourceForEditing(resource);
+        });
+
+        resourceList.appendChild(listItem);
+    });
+
+    modal.style.display = "block";
+
+          selectedResource = element;
+          document.getElementById("editResourceName").value = element.children[0].innerText;
+    document.getElementById("editResourceDetails").value = element.children[1].innerText;
+    document.getElementById("editAdditionalDetails").value = element.children[2].innerText;
+    document.getElementById("editResourceRequestId").value = element.children[3] ? element.children[3].innerText : "";
+
+    document.getElementById("editResourceModal").style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("editResourceModal").style.display = "none";
+}
+
+function saveResource() {
+    if (selectedResource) {
+        selectedResource.children[0].innerText = document.getElementById("editResourceName").value;
+        selectedResource.children[1].innerText = document.getElementById("editResourceDetails").value;
+        selectedResource.children[2].innerText = document.getElementById("editAdditionalDetails").value;
+        if (selectedResource.children[3]) {
+            selectedResource.children[3].innerText = document.getElementById("editResourceRequestId").value;
         }
-        function closeModal() {
-            document.getElementById("editResourceModal").style.display = "none";
-        }
-        function saveResource() {
-            if (selectedResource) {
-                selectedResource.children[0].innerText = document.getElementById("editResourceName").value;
-                selectedResource.children[1].innerText = document.getElementById("editResourceDetails").value;
-                selectedResource.children[2].innerText = document.getElementById("editAdditionalDetails").value;
-                selectedResource.children[3].innerText = document.getElementById("editResourceRequestId").value;
-            }
-            closeModal();
+    }
+    closeModal();
         }
     </script>
 </body>
