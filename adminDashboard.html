@@ -70,10 +70,67 @@
             color: black;
             padding: 10px;
         }
+
         .resource div:nth-child(2) {
             flex-grow: 2;
             text-align: center;
         }
+
+/* General Modal Styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4); /* Black background with transparency */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  border-radius: 8px;
+  width: 50%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Close button styling */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+form label {
+  font-weight: bold;
+}
+
     </style>
 </head>
 <body>
@@ -96,20 +153,49 @@
     <div class="resource-container" id="resourceContainer">
         <div class="resource">
             <div>Resource Name</div>
-            <div>Resource Details</div>
+            <div style="background-color: white">Resource Details</div>
             <div>Additional Resource Details</div>
         </div>
         <div class="resource">
             <div>Resource Name</div>
-            <div>Resource Details</div>
+            <div style="background-color: white" >Resource Details</div>
             <div>Additional Resource Details</div>
         </div>
         <div class="resource">
             <div>Resource Request ID</div>
-            <div>Request Details</div>
+            <div style="background-color: white" >Request Details</div>
             <div>Additional Resource Details</div>
         </div>
     </div>
+    <div id="addResourceModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Add Resource</h2>
+          <form id="addResourceForm">
+            <label for="resourceName">Resource Name:</label>
+            <input type="text" id="resourceName" name="resourceName" required><br><br>
+
+            <label for="resourceDetails">Resource Details:</label>
+            <textarea id="resourceDetails" name="resourceDetails" rows="4" required></textarea><br><br>
+
+            <label for="resourceRequestId">Resource Request ID:</label>
+            <input type="number" id="resourceRequestId" name="resourceRequestId" required><br><br>
+
+            <label for="additionalDetails">Additional Details:</label>
+            <textarea id="additionalDetails" name="additionalDetails" rows="4"></textarea><br><br>
+
+            <label for="pdfUpload">Upload PDF:</label>
+            <input type="file" id="pdfUpload" accept=".pdf"><br><br>
+
+            <div id="pdfActions" style="display: none;">
+              <button type="button" id="viewPdfBtn">View PDF</button>
+              <button type="button" id="deletePdfBtn">Delete PDF</button>
+            </div>
+
+            <button type="submit">Save Resource</button>
+          </form>
+        </div>
+      </div>
     <script>
         function sortResources() {
             alert("Sorting resources...");
@@ -118,11 +204,87 @@
             alert("Sorting requests...");
         }
         function addResource() {
-            const container = document.getElementById("resourceContainer");
-            const newResource = document.createElement("div");
-            newResource.className = "resource";
-            newResource.innerHTML = `<div>New Resource</div><div>Resource Details</div><div>Additional Resource Details</div>`;
-            container.appendChild(newResource);
+            document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("addResourceModal");
+  const closeModalBtn = document.querySelector(".close");
+  const pdfUploadInput = document.getElementById("pdfUpload");
+  const pdfActionsDiv = document.getElementById("pdfActions");
+  const viewPdfBtn = document.getElementById("viewPdfBtn");
+  const deletePdfBtn = document.getElementById("deletePdfBtn");
+  let uploadedPdf = null;
+
+  // Open modal when "Add Resource" is clicked
+  function addResource() {
+    modal.style.display = "block";
+  }
+
+  // Attach the function globally
+  window.addResource = addResource;
+
+  // Close modal
+  closeModalBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+    resetForm();
+  });
+
+  // Hide modal when clicking outside
+  window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.style.display = "none";
+      resetForm();
+    }
+  });
+
+  // Handle PDF upload
+  pdfUploadInput.addEventListener("change", () => {
+    const file = pdfUploadInput.files[0];
+    if (file && file.type === "application/pdf") {
+      uploadedPdf = URL.createObjectURL(file);
+      pdfActionsDiv.style.display = "block";
+    } else {
+      alert("Please upload a valid PDF file.");
+      pdfUploadInput.value = "";
+      pdfActionsDiv.style.display = "none";
+    }
+  });
+
+  // View PDF
+  viewPdfBtn.addEventListener("click", () => {
+    if (uploadedPdf) {
+      window.open(uploadedPdf, "_blank");
+    } else {
+      alert("No PDF uploaded.");
+    }
+  });
+
+  // Delete PDF
+  deletePdfBtn.addEventListener("click", () => {
+    uploadedPdf = null;
+    pdfUploadInput.value = "";
+    pdfActionsDiv.style.display = "none";
+    alert("PDF deleted.");
+  });
+
+  // Reset form
+  function resetForm() {
+    document.getElementById("addResourceForm").reset();
+    uploadedPdf = null;
+    pdfActionsDiv.style.display = "none";
+  }
+
+  // Form submission
+  document.getElementById("addResourceForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    if (uploadedPdf) {
+      data.append("pdfUrl", uploadedPdf);
+    }
+    console.log("Resource Data Submitted:", Object.fromEntries(data));
+    alert("Resource saved!");
+    modal.style.display = "none";
+    resetForm();
+  });
+});
         }
         function alterResources() {
             alert("Altering resources...");
