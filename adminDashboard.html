@@ -137,11 +137,31 @@ form label {
     <div class="header">
         <div>StudyLocker<img src="LandingPage-Demo/images/11910998_resized.png" ></div>
         <div class="icons">
-            <div><img src="LandingPage-Demo/images/Screenshot (267).ico" ></div>
-            <div><img src="LandingPage-Demo/images/Screenshot (268).ico" ></div>
-            <div><img src="LandingPage-Demo/images/Screenshot (269).ico" ></div>
+            <div><button type="button"onclick="alert('Menu Button clicked!')">
+       <!--Add the menu code here-->
+                <img src="LandingPage-Demo/images/Screenshot (267).ico"
+                "Button Image" style="width: 50px; height: 50px;">
+                    </button>
+        </div>
+            <div><button type="button"onclick="alert('Email Button clicked!')">
+                <a href="#"><!--Add the url for the email here-->
+                <img src="LandingPage-Demo/images/Screenshot (268).ico"
+                "Button Image" style="width: 50px; height: 50px;">
+
+            </button></div>
+            <div><button type="button"onclick="alert('Notification Button clicked!')">
+<!--Add the menu code here-->
+                <img src="LandingPage-Demo/images/Screenshot (269).ico"
+                "Button Image" style="width: 50px; height: 50px;">
+            </button></div>
             <div>|</div>
-            <div><img src="LandingPage-Demo/images/Screenshot (270).ico"></div>
+            <div><button type="button"onclick="alert('User Profile Button clicked!')">
+                <a href="#"><!--Add the url for the User Profile here-->
+                <img src="LandingPage-Demo/images/Screenshot (270).ico"
+                "Button Image" style="width: 50px; height: 50px;">
+
+            </button>
+            </div>
         </div>
     </div>
     <div class="nav-bar">
@@ -196,7 +216,10 @@ form label {
           </form>
         </div>
       </div>
+
     <script>
+
+
         function sortResources() {
             alert("Sorting resources...");
         }
@@ -286,8 +309,27 @@ form label {
   });
 });
         }
-        function alterResources() {
-            alert("Altering resources...");
+        function alterResources(element) {
+            selectedResource = element;
+            document.getElementById("editResourceName").value = element.children[0].innerText;
+            document.getElementById("editResourceDetails").value = element.children[1].innerText;
+            document.getElementById("editAdditionalDetails").value = element.children[2].innerText;
+            document.getElementById("editResourceRequestId").value = element.children[3].innerText;
+            document.getElementById("pdfUpload").style.display = "block";
+
+
+        }
+        function closeModal() {
+            document.getElementById("editResourceModal").style.display = "none";
+        }
+        function saveResource() {
+            if (selectedResource) {
+                selectedResource.children[0].innerText = document.getElementById("editResourceName").value;
+                selectedResource.children[1].innerText = document.getElementById("editResourceDetails").value;
+                selectedResource.children[2].innerText = document.getElementById("editAdditionalDetails").value;
+                selectedResource.children[3].innerText = document.getElementById("editResourceRequestId").value;
+            }
+            closeModal();
         }
     </script>
 </body>
