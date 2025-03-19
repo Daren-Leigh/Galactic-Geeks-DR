@@ -3,35 +3,57 @@ const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
 async function registerUser() {
-    const name = document.getElementById("name").value;
-    const surname = document.getElementById("surname").value;
-    const username = document.getElementById("username").value;
-    const email = document.getElementById("email").value;
+    const name = document.getElementById("name").value.trim();
+    const surname = document.getElementById("surname").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirm-password").value;
 
+    const messageBox = document.getElementById("message-box");
+
+    // ✅ Error Handling: Check if fields are empty
     if (!name || !surname || !username || !email || !password || !confirmPassword) {
-        alert("Please fill in all fields.");
+        showMessage("Please fill in all fields.", "error");
         return;
     }
-    
+
+    // ✅ Error Handling: Check if passwords match
     if (password !== confirmPassword) {
-        alert("Passwords do not match!");
+        showMessage("Passwords do not match.", "error");
         return;
     }
 
-    const { data, error } = await supabase.auth.signUp(
-        { email, password },
-        { redirectTo: "loginPage.html" }
-    );
+    try {
+        // ✅ Supabase Email Authentication (Magic Link)
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: { name, surname, username },
+                emailRedirectTo: "http://127.0.0.1:5500/loginPage.html"
+            }
+        });
 
-    if (error) {
-        alert("Registration failed: " + error.message);
-    } else {
-        alert("Check your email to verify your account!");
-        await supabase.from("users").insert([
-            { name, surname, username, email, role: "user" }
-        ]);
-        window.location.href = "loginPage.html";
+        if (error) throw error;
+
+        // ✅ Success Message
+        showMessage("Registration successful! Check your email to verify your account.", "success");
+
+    } catch (err) {
+        showMessage(`Error: ${err.message}`, "error");
     }
 }
+
+// ✅ Function to Display Messages
+function showMessage(msg, type) {
+    const messageBox = document.getElementById("message-box");
+    messageBox.innerHTML = msg;
+    messageBox.className = type;
+    messageBox.style.display = "block";
+
+    setTimeout(() => {
+        messageBox.style.display = "none";
+    }, 4000);
+}
+

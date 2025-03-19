@@ -9,6 +9,9 @@
 <body>
     <div class="container">
         <h2>Register</h2>
+        
+        <div id="message-box"></div> <!-- Message Box for Errors/Success -->
+        
         <input type="text" id="name" placeholder="First Name">
         <input type="text" id="surname" placeholder="Surname">
         <input type="text" id="username" placeholder="Username">
@@ -16,10 +19,10 @@
         <input type="password" id="password" placeholder="Password">
         <input type="password" id="confirm-password" placeholder="Confirm Password">
         <button onclick="registerUser()">Register</button>
+
         <p>Already have an account? <a href="loginPage.html">Login</a></p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.0.0/supabase.min.js"></script>
-    <script src="registerPage.js"></script>
+    <script src="registerPage.js" defer></script>
 </body>
 </html>
