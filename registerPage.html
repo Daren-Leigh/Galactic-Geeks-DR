@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="registerPage.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Register</h2>
+        <input type="text" id="name" placeholder="First Name">
+        <input type="text" id="surname" placeholder="Surname">
+        <input type="text" id="username" placeholder="Username">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <input type="password" id="confirm-password" placeholder="Confirm Password">
+        <button onclick="registerUser()">Register</button>
+        <p>Already have an account? <a href="loginPage.html">Login</a></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.0.0/supabase.min.js"></script>
+    <script src="registerPage.js"></script>
+</body>
+</html>

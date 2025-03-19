@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="loginPage.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <input type="email" id="login-email" placeholder="Email">
+        <input type="password" id="login-password" placeholder="Password">
+        <button onclick="loginUser()">Login</button>
+
+        <h3>Or login with OTP</h3>
+        <input type="text" id="login-phone" placeholder="Phone Number">
+        <input type="text" id="login-otp" placeholder="Enter OTP">
+        <button onclick="verifyOtp()">Verify OTP</button>
+
+        <p>Don't have an account? <a href="registerPage.html">Register</a></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.0.0/supabase.min.js"></script>
+    <script src="loginPage.js"></script>
+</body>
+</html>
