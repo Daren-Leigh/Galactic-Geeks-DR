@@ -4,136 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="AdminStyles.css">
     <style>
-        body {
-            background-color: #3f3751;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
-        .header {
-            background-color: #3f3751;
+        /* Additional styles for GraphiQL and statistics */
+        #graphiqlContainer {
+            background-color: #2f2b3e;
             padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .icons {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-right: 20px;
-        }
-        .icons button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-        }
-        .icons img {
-            width: 50px;
-            height: 50px;
-        }
-        .icons div {
-            background-color: transparent;
-            color: #e87722;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .nav-bar {
-            background-color: #e87722;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        .nav-bar button {
-            background-color: #5c4a72;
-            border: none;
-            padding: 10px 20px;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .resource-container {
             margin-top: 20px;
+            border-radius: 8px;
+        }
+        #resourceChart {
+            width: 100%;
+            height: 300px;
+        }
+        .stats-container {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: space-around;
+            margin-top: 20px;
+            color: #ffffff;
         }
-        .resource {
-            display: flex;
-            justify-content: space-between;
-            width: 60%;
-            margin: 10px;
-            padding: 15px;
-            border-radius: 10px;
-        }
-        .resource div {
-            background-color: #688E26;
-            color: black;
-            padding: 10px;
-        }
-        .resource div:nth-child(2) {
-            flex-grow: 2;
+        .stat-item {
+            background-color: #e87722;
+            padding: 20px;
+            border-radius: 8px;
+            width: 30%;
             text-align: center;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            border-radius: 8px;
-            width: 50%;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-        }
-        button {
-            cursor: pointer;
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        form label {
-            font-weight: bold;
+        .stat-item h3 {
+            margin: 0;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div>StudyLocker<img src="images/11910998_resized.png"></div>
+        <div>StudyLocker <img src="images/11910998_resized.png" alt="StudyLocker"></div>
         <div class="icons">
             <button onclick="alert('Menu Button clicked!')">
                 <img src="images/Screenshot (267).ico" alt="Menu">
@@ -154,409 +58,86 @@
             </a>
         </div>
     </div>
+
     <div class="nav-bar">
         <button onclick="sortResources()">Sort Resources</button>
         <button onclick="sortRequests()">Sort Request</button>
         <button onclick="addResource()">Add Resource</button>
         <button onclick="alterResources()">Alter Resources</button>
     </div>
+    
     <div class="resource-container" id="resourceContainer">
         <div class="resource">
             <div>Resource Name</div>
             <div style="background-color: white">Resource Details</div>
             <div>Additional Resource Details</div>
         </div>
-        <div class="resource">
-            <div>Resource Name</div>
-            <div style="background-color: white" >Resource Details</div>
-            <div>Additional Resource Details</div>
+    </div>
+
+    <!-- GraphiQL container -->
+    <div id="graphiqlContainer">
+        <h2>GraphiQL Interface</h2>
+        <button onclick="fetchGraphData()">Fetch Data</button>
+        <canvas id="resourceChart"></canvas>
+    </div>
+
+    <!-- Statistics container -->
+    <div class="stats-container">
+        <div class="stat-item">
+            <h3>Accepted Requests</h3>
+            <p id="acceptedCount">Loading...</p>
         </div>
-        <div class="resource">
-            <div>Resource Request ID</div>
-            <div style="background-color: white" >Request Details</div>
-            <div>Additional Resource Details</div>
+        <div class="stat-item">
+            <h3>Rejected Requests</h3>
+            <p id="rejectedCount">Loading...</p>
+        </div>
+        <div class="stat-item">
+            <h3>Resource Usage</h3>
+            <p id="resourceUsageCount">Loading...</p>
         </div>
     </div>
-    <div id="addResourceModal" class="modal">
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <h2>Add Resource</h2>
-          <form id="addResourceForm">
+
+    <!-- Updated Add Resource Modal -->
+<div id="addResourceModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add Resource</h2>
+        <form id="addResourceForm">
             <label for="resourceName">Resource Name:</label>
-            <input type="text" id="resourceName" name="resourceName" required><br><br>
+            <input type="text" id="resourceName" required><br><br>
 
             <label for="resourceDetails">Resource Details:</label>
-            <textarea id="resourceDetails" name="resourceDetails" rows="4" required></textarea><br><br>
+            <textarea id="resourceDetails" rows="4" required></textarea><br><br>
 
-            <label for="resourceRequestId">Resource Request ID:</label>
-            <input type="number" id="resourceRequestId" name="resourceRequestId" required><br><br>
-
-            <label for="additionalDetails">Additional Details:</label>
-            <textarea id="additionalDetails" name="additionalDetails" rows="4"></textarea><br><br>
+            <label for="additionalDetails">Additional Resource Details:</label>
+            <input type="text" id="additionalDetails"><br><br>
 
             <label for="pdfUpload">Upload PDF:</label>
             <input type="file" id="pdfUpload" accept=".pdf"><br><br>
 
             <div id="pdfActions" style="display: none;">
-              <button type="button" id="viewPdfBtn">View PDF</button>
-              <button type="button" id="deletePdfBtn">Delete PDF</button>
+                <button type="button" id="viewPdfBtn">View PDF</button>
+                <button type="button" id="deletePdfBtn">Delete PDF</button>
             </div>
 
             <button type="submit">Save Resource</button>
-          </form>
-        </div>
-      </div>
-<!-- Resource Selection Modal -->
-<div id="selectResourceModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeSelectModal()">&times;</span>
-        <h2>Select a Resource to Edit</h2>
-        <ul id="resourceList"></ul> <!-- List of selectable resources -->
-    </div>
-</div>
-<div id="editResourceModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Edit Resource</h2>
-        <form id="editResourceForm">
-            <label for="editResourceName">Resource Name:</label>
-            <input type="text" id="editResourceName" required><br><br>
-
-            <label for="editResourceDetails">Resource Details:</label>
-            <textarea id="editResourceDetails" rows="4" required></textarea><br><br>
-
-            <label for="editResourceRequestId">Resource Request ID:</label>
-            <input type="number" id="editResourceRequestId" required><br><br>
-
-            <label for="editAdditionalDetails">Additional Details:</label>
-            <textarea id="editAdditionalDetails" rows="4"></textarea><br><br>
-
-            <button type="button" onclick="saveResource()">Save Changes</button>
         </form>
     </div>
 </div>
-    <script>
-import { createClient } from '@supabase/supabase-js'
-const supabaseUrl = 'https://fsjyzxygoyuxetzkpolo.supabase.co'
-const supabaseKey = process.env.SUPABASE_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
 
+<!-- Resource Table (Hidden initially) -->
+<div id="resourceTable" class="resource-table" style="display:none;">
+    <div class="resource-header">
+        <div>Resource Name</div>
+        <div>Resource Details</div>
+        <div>Additional Resource Details</div>
+        <div>Request Resource ID</div>
+        <div>PDF</div>
+        <div>Action</div>
+    </div>
+    <div id="resourceContainer"></div>
+</div>
 
-let { data: Request } = await supabase
-  .from('Request Table')
-  .select('Request id')
-  .select('Request Message')
-  .select('Resource id')
-  .select('Status')
-  .select('created')
-  .select('updated')
-  .select('User id')
-  .select('*')
-  .select('some_column,other_column')
-  .select(`
-    some_column,
-    other_table (
-      foreign_key
-    )
-  `)
-  .select('*')
-  .range(0, 9)
-  .select("*")
-// Filters
-.eq('column', 'Equal to')
-  .gt('column', 'Greater than')
-  .lt('column', 'Less than')
-  .gte('column', 'Greater than or equal to')
-  .lte('column', 'Less than or equal to')
-  .like('column', '%CaseSensitive%')
-  .ilike('column', '%CaseInsensitive%')
-  .is('column', null)
-  .in('column', ['Array', 'Values'])
-  .neq('column', 'Not equal to')
-
-  // Arrays
-  .contains('array_column', ['array', 'contains'])
-  .containedBy('array_column', ['contained', 'by'])
-
-  // Logical operators
-  .not('column', 'like', 'Negate filter')
-  .or('some_column.eq.Some value, other_column.eq.Other value')
-  .insert([
-    { some_column: 'someValue', other_column: 'otherValue' },
-  ])
-  .select()
-  .insert([
-    { some_column: 'someValue' },
-    { some_column: 'otherValue' },
-  ])
-  .select()
-  .upsert({ some_column: 'someValue' })
-  .select()
-  .update({ other_column: 'otherValue' })
-  .eq('some_column', 'someValue')
-  .select()
-  .delete()
-  .eq('some_column', 'someValue')
-
-
-
-
-
-  let { data: Resource , error } = await supabase
-  .from('Resource Table')
-  .select('Resource id')
-  .select('Resource Name')
-  .select('Resource Description')
-  .select('*')
-  .select('some_column,other_column')
-  .select(`
-    some_column,
-    other_table (
-      foreign_key
-    )
-  `)
-  .select('*')
-  .range(0, 9)
-  .select("*")
-  // Filters
-  .eq('column', 'Equal to')
-  .gt('column', 'Greater than')
-  .lt('column', 'Less than')
-  .gte('column', 'Greater than or equal to')
-  .lte('column', 'Less than or equal to')
-  .like('column', '%CaseSensitive%')
-  .ilike('column', '%CaseInsensitive%')
-  .is('column', null)
-  .in('column', ['Array', 'Values'])
-  .neq('column', 'Not equal to')
-
-  // Arrays
-  .contains('array_column', ['array', 'contains'])
-  .containedBy('array_column', ['contained', 'by'])
-
-  // Logical operators
-  .not('column', 'like', 'Negate filter')
-  .or('some_column.eq.Some value, other_column.eq.Other value')
-  .insert([
-    { some_column: 'someValue', other_column: 'otherValue' },
-  ])
-  .select()
-  .insert([
-    { some_column: 'someValue' },
-    { some_column: 'otherValue' },
-  ])
-  .select()
-  .upsert({ some_column: 'someValue' })
-  .select()
-  .update({ other_column: 'otherValue' })
-  .eq('some_column', 'someValue')
-  .select()
-  .delete()
-  .eq('some_column', 'someValue')
-
-
-
-
-
-
-  let { data: Notification  } = await supabase
-  .from('Notification Table')
-  .select('Notification id')
-  .select('Request id')
-  .select('message')
-  .select('*')
-  .select('some_column,other_column')
-  .select(`
-    some_column,
-    other_table (
-      foreign_key
-    )
-  `)
-  .select('*')
-  .range(0, 9)
-  .select("*")
-
-  // Filters
-  .eq('column', 'Equal to')
-  .gt('column', 'Greater than')
-  .lt('column', 'Less than')
-  .gte('column', 'Greater than or equal to')
-  .lte('column', 'Less than or equal to')
-  .like('column', '%CaseSensitive%')
-  .ilike('column', '%CaseInsensitive%')
-  .is('column', null)
-  .in('column', ['Array', 'Values'])
-  .neq('column', 'Not equal to')
-
-  // Arrays
-  .contains('array_column', ['array', 'contains'])
-  .containedBy('array_column', ['contained', 'by'])
-
-  // Logical operators
-  .not('column', 'like', 'Negate filter')
-  .or('some_column.eq.Some value, other_column.eq.Other value')
-  .insert([
-    { some_column: 'someValue', other_column: 'otherValue' },
-  ])
-  .select()
-  .insert([
-    { some_column: 'someValue' },
-    { some_column: 'otherValue' },
-  ])
-  .select()
-  .upsert({ some_column: 'someValue' })
-  .select()
-  .update({ other_column: 'otherValue' })
-  .eq('some_column', 'someValue')
-  .select()
-  .delete()
-  .eq('some_column', 'someValue')
-
-
-function sortResources() {
-            alert("Sorting resources...");
-        }
-        function sortRequests() {
-            alert("Sorting requests...");
-        }
-        function addResource() {
-            document.addEventListener("DOMContentLoaded", () => {
-  const modal = document.getElementById("addResourceModal");
-  const closeModalBtn = document.querySelector(".close");
-  const pdfUploadInput = document.getElementById("pdfUpload");
-  const pdfActionsDiv = document.getElementById("pdfActions");
-  const viewPdfBtn = document.getElementById("viewPdfBtn");
-  const deletePdfBtn = document.getElementById("deletePdfBtn");
-  let uploadedPdf = null;
-
-  // Open modal when "Add Resource" is clicked
-  function addResource() {
-    modal.style.display = "block";
-  }
-
-  // Attach the function globally
-  window.addResource = addResource;
-
-  // Close modal
-  closeModalBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-    resetForm();
-  });
-
-  // Hide modal when clicking outside
-  window.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      modal.style.display = "none";
-      resetForm();
-    }
-  });
-
-  // Handle PDF upload
-  pdfUploadInput.addEventListener("change", () => {
-    const file = pdfUploadInput.files[0];
-    if (file && file.type === "application/pdf") {
-      uploadedPdf = URL.createObjectURL(file);
-      pdfActionsDiv.style.display = "block";
-    } else {
-      alert("Please upload a valid PDF file.");
-      pdfUploadInput.value = "";
-      pdfActionsDiv.style.display = "none";
-    }
-  });
-
-  // View PDF
-  viewPdfBtn.addEventListener("click", () => {
-    if (uploadedPdf) {
-      window.open(uploadedPdf, "_blank");
-    } else {
-      alert("No PDF uploaded.");
-    }
-  });
-
-  // Delete PDF
-  deletePdfBtn.addEventListener("click", () => {
-    uploadedPdf = null;
-    pdfUploadInput.value = "";
-    pdfActionsDiv.style.display = "none";
-    alert("PDF deleted.");
-  });
-
-  // Reset form
-  function resetForm() {
-    document.getElementById("addResourceForm").reset();
-    uploadedPdf = null;
-    pdfActionsDiv.style.display = "none";
-  }
-
-  // Form submission
-  document.getElementById("addResourceForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const data = new FormData(e.target);
-    if (uploadedPdf) {
-      data.append("pdfUrl", uploadedPdf);
-    }
-    console.log("Resource Data Submitted:", Object.fromEntries(data));
-    alert("Resource saved!");
-    modal.style.display = "none";
-    resetForm();
-  });
-
-});
-        }
-
-        let selectedResource = null;
-
-        function alterResources(element) {
-
-            const modal = document.getElementById("selectResourceModal");
-    const resourceList = document.getElementById("resourceList");
-    resourceList.innerHTML = ""; // Clear previous entries
-
-    // Get all resources
-    const resources = document.querySelectorAll(".resource");
-
-    // Populate the list
-    resources.forEach((resource, index) => {
-        const listItem = document.createElement("li");
-        listItem.textContent = resource.children[0].innerText; // Resource name
-        listItem.style.cursor = "pointer";
-        listItem.style.padding = "10px";
-        listItem.style.borderBottom = "1px solid #ccc";
-
-        // When a resource is clicked, open the edit modal
-        listItem.addEventListener("click", () => {
-            selectResourceForEditing(resource);
-        });
-
-        resourceList.appendChild(listItem);
-    });
-
-    modal.style.display = "block";
-
-          selectedResource = element;
-          document.getElementById("editResourceName").value = element.children[0].innerText;
-    document.getElementById("editResourceDetails").value = element.children[1].innerText;
-    document.getElementById("editAdditionalDetails").value = element.children[2].innerText;
-    document.getElementById("editResourceRequestId").value = element.children[3] ? element.children[3].innerText : "";
-
-    document.getElementById("editResourceModal").style.display = "block";
-}
-
-function closeModal() {
-    document.getElementById("editResourceModal").style.display = "none";
-}
-
-function saveResource() {
-    if (selectedResource) {
-        selectedResource.children[0].innerText = document.getElementById("editResourceName").value;
-        selectedResource.children[1].innerText = document.getElementById("editResourceDetails").value;
-        selectedResource.children[2].innerText = document.getElementById("editAdditionalDetails").value;
-        if (selectedResource.children[3]) {
-            selectedResource.children[3].innerText = document.getElementById("editResourceRequestId").value;
-        }
-    }
-    closeModal();
-        }
-    </script>
+    <script src="AdminScript.js"></script>
 </body>
 </html>
