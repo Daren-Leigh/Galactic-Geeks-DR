@@ -54,7 +54,38 @@ function createBarGraph(resources, requests) {
         },
     });
 }
+// Create bar graph using Chart.js
+function createBarGraph(resources, requests) {
+    const ctx = document.getElementById('resourceChart').getContext('2d');
+    const resourceNames = resources.map(res => res.Resource_Name);
+    const resourceUsage = resources.map(res => res.Usage_Count);
+    const statusCounts = {
+        accepted: requests.filter(req => req.Status === 'Accepted').length,
+        rejected: requests.filter(req => req.Status === 'Rejected').length,
+    };
 
+    // Update statistics
+    updateStatistics(statusCounts, resourceUsage);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [...resourceNames, 'Accepted Requests', 'Rejected Requests'],
+            datasets: [{
+                label: 'Resource Usage & Request Status',
+                data: [...resourceUsage, statusCounts.accepted, statusCounts.rejected],
+                backgroundColor: ['blue', 'green', 'red'],
+            }],
+        },
+    });
+}
+
+// Update statistics on the page
+function updateStatistics(statusCounts, resourceUsage) {
+    document.getElementById('acceptedCount').textContent = statusCounts.accepted;
+    document.getElementById('rejectedCount').textContent = statusCounts.rejected;
+    document.getElementById('resourceUsageCount').textContent = resourceUsage.reduce((a, b) => a + b, 0); // Sum of all usage counts
+}
 // Fetch and display notifications
 async function fetchNotifications() {
     let { data, error } = await supabase.from('Notification Table').select('*');
