@@ -4,24 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+
+    <!-- ✅ Load Supabase Client FIRST -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+    <!-- ✅ Link CSS -->
     <link rel="stylesheet" href="loginPage.css">
+
+    <!-- ✅ Load JavaScript AFTER Supabase is Available -->
+    <script src="loginPage.js" defer></script>
 </head>
 <body>
     <div class="container">
         <h2>Login</h2>
+
+        <div id="message-box"></div> <!-- Message Box for Errors/Success -->
+
         <input type="email" id="login-email" placeholder="Email">
         <input type="password" id="login-password" placeholder="Password">
-        <button onclick="loginUser()">Login</button>
+        <button id="login-btn">Login</button>
 
-        <h3>Or login with OTP</h3>
+        <h3>Or Login with OTP</h3>
         <input type="text" id="login-phone" placeholder="Phone Number">
         <input type="text" id="login-otp" placeholder="Enter OTP">
-        <button onclick="verifyOtp()">Verify OTP</button>
+        <button id="otp-btn">Verify OTP</button>
 
         <p>Don't have an account? <a href="registerPage.html">Register</a></p>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.0.0/supabase.min.js"></script>
-    <script src="loginPage.js"></script>
 </body>
 </html>

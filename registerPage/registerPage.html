@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+
+    <!-- ✅ Load Supabase Client FIRST -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+    <!-- ✅ Link CSS -->
     <link rel="stylesheet" href="registerPage.css">
+
+    <!-- ✅ Load JavaScript AFTER Supabase is Available -->
+    <script src="registerPage.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -22,7 +30,5 @@
 
         <p>Already have an account? <a href="loginPage.html">Login</a></p>
     </div>
-
-    <script src="registerPage.js" defer></script>
 </body>
 </html>
