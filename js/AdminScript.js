@@ -97,7 +97,111 @@ function displayNotifications(notifications) {
     const container = document.getElementById('notificationContainer');
     container.innerHTML = notifications.map(n => `<div class='notification'><p>${n.message}</p></div>`).join('');
 }
+// Function to generate unique Request Resource ID
+function generateRequestID() {
+    return 'REQ-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+}
 
+// Function to handle the addResource modal popup
+function addResource() {
+    const modal = document.getElementById("addResourceModal");
+    modal.style.display = "block";
+
+    document.querySelector(".close").onclick = function() {
+        modal.style.display = "none";
+    };
+
+    document.getElementById("addResourceForm").onsubmit = async function(event) {
+        event.preventDefault();
+        const resourceName = document.getElementById("resourceName").value;
+        const resourceDetails = document.getElementById("resourceDetails").value;
+        const additionalDetails = document.getElementById("additionalDetails").value;
+        const requestResourceID = generateRequestID();
+
+        // Handle PDF upload
+        const pdfFile = document.getElementById("pdfUpload").files[0];
+        if (pdfFile && pdfFile.type !== 'application/pdf') {
+            alert("Please upload a PDF file.");
+            return;
+        }
+
+        // Upload PDF to Supabase storage if valid
+        let pdfUrl = "";
+        if (pdfFile) {
+            const { data, error } = await supabase.storage.from('pdf-bucket').upload(pdfFile.name, pdfFile);
+            if (error) {
+                alert("Error uploading PDF: " + error.message);
+                return;
+            }
+            pdfUrl = data?.path;
+        }
+
+        // Insert resource into the database
+        const { error } = await supabase.from('Resource Table').insert([{
+            'Resource Name': resourceName,
+            'Resource Details': resourceDetails,
+            'Additional Resource Details': additionalDetails,
+            'Request Resource ID': requestResourceID,
+            'PDF URL': pdfUrl
+        }]);
+
+        if (error) {
+            console.error('Error adding resource:', error);
+        } else {
+            fetchResources();
+            modal.style.display = "none";
+        }
+    };
+}
+
+// Function to fetch and display resources
+async function fetchResources() {
+    let { data, error } = await supabase.from('Resource Table').select('*');
+    if (error) console.error('Error fetching resources:', error);
+    else displayResources(data);
+}
+
+// Function to display resources in a table
+function displayResources(resources) {
+    const container = document.getElementById('resourceContainer');
+    container.innerHTML = '';
+    resources.forEach(resource => {
+        const row = document.createElement('div');
+        row.classList.add('resource-row');
+        row.innerHTML = `
+            <div>${resource['Resource Name']}</div>
+            <div>${resource['Resource Details']}</div>
+            <div>${resource['Additional Resource Details']}</div>
+            <div>${resource['Request Resource ID']}</div>
+            <div><a href="${resource['PDF URL']}" target="_blank">View PDF</a></div>
+            <div><button onclick="deleteResource('${resource['Request Resource ID']}')">Delete</button></div>
+        `;
+        container.appendChild(row);
+    });
+    document.getElementById("resourceTable").style.display = "block";
+}
+
+// Function to delete a resource
+async function deleteResource(requestResourceID) {
+    const { error } = await supabase.from('Resource Table').delete().eq('Request Resource ID', requestResourceID);
+    if (error) {
+        console.error('Error deleting resource:', error);
+    } else {
+        fetchResources();
+    }
+}
+
+// Notification button click handler
+document.querySelector("button[onclick='alert(\'Notification Button clicked!\')']").addEventListener('click', () => {
+    fetchNotifications();
+});
+
+// Fetch notifications
+async function fetchNotifications() {
+    const { data, error } = await supabase.from('Notification Table').select('*');
+    if (error) console.error('Error fetching notifications:', error);
+    else alert('New notifications: ' + JSON.stringify(data));
+}
 // Fetch and display resources
 async function fetchResources() {
     let { data, error } = await supabase.from('Resource Table').select('*');
