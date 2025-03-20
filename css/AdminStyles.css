@@ -75,6 +75,30 @@ body {
     width: 50%;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
+.resource-table {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.resource-header, .resource-row {
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    margin: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #4a3f61;
+}
+
+.resource-header div {
+    font-weight: bold;
+}
+
+.resource-row div {
+    padding: 10px;
+}
 .close {
     color: #aaa;
     float: right;
