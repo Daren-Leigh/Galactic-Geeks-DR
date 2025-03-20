@@ -42,27 +42,6 @@ function createBarGraph(resources, requests) {
         accepted: requests.filter(req => req.Status === 'Accepted').length,
         rejected: requests.filter(req => req.Status === 'Rejected').length,
     };
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [...resourceNames, 'Accepted Requests', 'Rejected Requests'],
-            datasets: [{
-                label: 'Resource Usage & Request Status',
-                data: [...resourceUsage, statusCounts.accepted, statusCounts.rejected],
-                backgroundColor: ['blue', 'green', 'red'],
-            }],
-        },
-    });
-}
-// Create bar graph using Chart.js
-function createBarGraph(resources, requests) {
-    const ctx = document.getElementById('resourceChart').getContext('2d');
-    const resourceNames = resources.map(res => res.Resource_Name);
-    const resourceUsage = resources.map(res => res.Usage_Count);
-    const statusCounts = {
-        accepted: requests.filter(req => req.Status === 'Accepted').length,
-        rejected: requests.filter(req => req.Status === 'Rejected').length,
-    };
 
     // Update statistics
     updateStatistics(statusCounts, resourceUsage);
@@ -86,17 +65,22 @@ function updateStatistics(statusCounts, resourceUsage) {
     document.getElementById('rejectedCount').textContent = statusCounts.rejected;
     document.getElementById('resourceUsageCount').textContent = resourceUsage.reduce((a, b) => a + b, 0); // Sum of all usage counts
 }
+
 // Fetch and display notifications
 async function fetchNotifications() {
-    let { data, error } = await supabase.from('Notification Table').select('*');
-    if (error) console.error('Error fetching notifications:', error);
-    else displayNotifications(data);
+    const { data, error } = await supabase.from('Notification Table').select('*');
+    if (error) {
+        console.error('Error fetching notifications:', error);
+    } else {
+        displayNotifications(data);
+    }
 }
 
 function displayNotifications(notifications) {
     const container = document.getElementById('notificationContainer');
     container.innerHTML = notifications.map(n => `<div class='notification'><p>${n.message}</p></div>`).join('');
 }
+
 // Function to generate unique Request Resource ID
 function generateRequestID() {
     return 'REQ-' + Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -157,8 +141,11 @@ function addResource() {
 // Function to fetch and display resources
 async function fetchResources() {
     let { data, error } = await supabase.from('Resource Table').select('*');
-    if (error) console.error('Error fetching resources:', error);
-    else displayResources(data);
+    if (error) {
+        console.error('Error fetching resources:', error);
+    } else {
+        displayResources(data);
+    }
 }
 
 // Function to display resources in a table
@@ -199,38 +186,24 @@ document.querySelector("button[onclick='alert(\'Notification Button clicked!\')'
 // Fetch notifications
 async function fetchNotifications() {
     const { data, error } = await supabase.from('Notification Table').select('*');
-    if (error) console.error('Error fetching notifications:', error);
-    else alert('New notifications: ' + JSON.stringify(data));
-}
-// Fetch and display resources
-async function fetchResources() {
-    let { data, error } = await supabase.from('Resource Table').select('*');
-    if (error) console.error('Error fetching resources:', error);
-    else displayResources(data);
-}
-
-function displayResources(resources) {
-    const container = document.getElementById('resourceContainer');
-    container.innerHTML = resources.map(r => `<div class='resource'><h3>${r['Resource Name']}</h3><p>${r['Resource Description']}</p></div>`).join('');
-}
-
-// Add a new resource
-async function addResource() {
-    const name = document.getElementById('resourceName').value;
-    const description = document.getElementById('resourceDescription').value;
-    if (!name || !description) return alert('Please fill in all fields');
-    let { error } = await supabase.from('Resource Table').insert([{ 'Resource Name': name, 'Resource Description': description }]);
-    if (error) console.error('Error adding resource:', error);
-    else fetchResources();
+    if (error) {
+        console.error('Error fetching notifications:', error);
+    } else {
+        alert('New notifications: ' + JSON.stringify(data));
+    }
 }
 
 // Fetch and display requests
 async function fetchRequests() {
     let { data, error } = await supabase.from('Request Table').select('*');
-    if (error) console.error('Error fetching requests:', error);
-    else displayRequests(data);
+    if (error) {
+        console.error('Error fetching requests:', error);
+    } else {
+        displayRequests(data);
+    }
 }
 
+// Function to display requests in a table
 function displayRequests(requests) {
     const container = document.getElementById('requestContainer');
     container.innerHTML = requests.map(r => `<div class='request'><p>${r['Request Message']}</p></div>`).join('');
