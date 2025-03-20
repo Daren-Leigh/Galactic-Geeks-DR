@@ -97,30 +97,46 @@
         </div>
     </div>
 
-    <!-- Add Resource Modal -->
-    <div id="addResourceModal" class="modal">
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <h2>Add Resource</h2>
-          <form id="addResourceForm">
+    <!-- Updated Add Resource Modal -->
+<div id="addResourceModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add Resource</h2>
+        <form id="addResourceForm">
             <label for="resourceName">Resource Name:</label>
             <input type="text" id="resourceName" required><br><br>
 
             <label for="resourceDetails">Resource Details:</label>
             <textarea id="resourceDetails" rows="4" required></textarea><br><br>
 
+            <label for="additionalDetails">Additional Resource Details:</label>
+            <input type="text" id="additionalDetails"><br><br>
+
             <label for="pdfUpload">Upload PDF:</label>
             <input type="file" id="pdfUpload" accept=".pdf"><br><br>
 
             <div id="pdfActions" style="display: none;">
-              <button type="button" id="viewPdfBtn">View PDF</button>
-              <button type="button" id="deletePdfBtn">Delete PDF</button>
+                <button type="button" id="viewPdfBtn">View PDF</button>
+                <button type="button" id="deletePdfBtn">Delete PDF</button>
             </div>
 
             <button type="submit">Save Resource</button>
-          </form>
-        </div>
-      </div>
+        </form>
+    </div>
+</div>
+
+<!-- Resource Table (Hidden initially) -->
+<div id="resourceTable" class="resource-table" style="display:none;">
+    <div class="resource-header">
+        <div>Resource Name</div>
+        <div>Resource Details</div>
+        <div>Additional Resource Details</div>
+        <div>Request Resource ID</div>
+        <div>PDF</div>
+        <div>Action</div>
+    </div>
+    <div id="resourceContainer"></div>
+</div>
 
     <script src="AdminScript.js"></script>
 </body>
