@@ -5,10 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="AdminStyles.css">
+    <style>
+        /* Additional styles for GraphiQL and statistics */
+        #graphiqlContainer {
+            background-color: #2f2b3e;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        #resourceChart {
+            width: 100%;
+            height: 300px;
+        }
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            color: #ffffff;
+        }
+        .stat-item {
+            background-color: #e87722;
+            padding: 20px;
+            border-radius: 8px;
+            width: 30%;
+            text-align: center;
+        }
+        .stat-item h3 {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
     <div class="header">
-        <div>StudyLocker <img src="images/11910998_resized.png"></div>
+        <div>StudyLocker <img src="images/11910998_resized.png" alt="StudyLocker"></div>
         <div class="icons">
             <button onclick="alert('Menu Button clicked!')">
                 <img src="images/Screenshot (267).ico" alt="Menu">
@@ -29,12 +58,14 @@
             </a>
         </div>
     </div>
+
     <div class="nav-bar">
         <button onclick="sortResources()">Sort Resources</button>
         <button onclick="sortRequests()">Sort Request</button>
         <button onclick="addResource()">Add Resource</button>
         <button onclick="alterResources()">Alter Resources</button>
     </div>
+    
     <div class="resource-container" id="resourceContainer">
         <div class="resource">
             <div>Resource Name</div>
@@ -42,6 +73,31 @@
             <div>Additional Resource Details</div>
         </div>
     </div>
+
+    <!-- GraphiQL container -->
+    <div id="graphiqlContainer">
+        <h2>GraphiQL Interface</h2>
+        <button onclick="fetchGraphData()">Fetch Data</button>
+        <canvas id="resourceChart"></canvas>
+    </div>
+
+    <!-- Statistics container -->
+    <div class="stats-container">
+        <div class="stat-item">
+            <h3>Accepted Requests</h3>
+            <p id="acceptedCount">Loading...</p>
+        </div>
+        <div class="stat-item">
+            <h3>Rejected Requests</h3>
+            <p id="rejectedCount">Loading...</p>
+        </div>
+        <div class="stat-item">
+            <h3>Resource Usage</h3>
+            <p id="resourceUsageCount">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Add Resource Modal -->
     <div id="addResourceModal" class="modal">
         <div class="modal-content">
           <span class="close">&times;</span>
