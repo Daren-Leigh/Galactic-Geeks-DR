@@ -4,8 +4,10 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f4f4f4;
+    background: url("C:/Users/caleb/Documents/GalacticGeeks3/Galactic-Geeks-DR/library1.jpg") no-repeat center center fixed;
+    background-size: cover;
 }
+
 
 .container {
     background: white;
