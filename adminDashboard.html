@@ -6,6 +6,63 @@
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="AdminStyles.css">
     <style>
+        body {
+            background-color: #3f3751;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .header {
+            background-color: #3f3751;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+        }
+        .icons img {
+            width: 40px;
+            height: 40px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 25px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 50%;
+            font-size: 18px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
         /* Additional styles for GraphiQL and statistics */
         #graphiqlContainer {
             background-color: #2f2b3e;
@@ -50,7 +107,6 @@
             <button onclick="alert('Notification Button clicked!')">
                 <img src="images/Screenshot (269).ico" alt="Notification">
             </button>
-            <div>|</div>
             <a href="#">
                 <button onclick="alert('User Profile Button clicked!')">
                     <img src="images/Screenshot (270).ico" alt="Profile">
@@ -65,7 +121,7 @@
         <button onclick="addResource()">Add Resource</button>
         <button onclick="alterResources()">Alter Resources</button>
     </div>
-    
+
     <div class="resource-container" id="resourceContainer">
         <div class="resource">
             <div>Resource Name</div>
@@ -97,46 +153,45 @@
         </div>
     </div>
 
-    <!-- Updated Add Resource Modal -->
-<div id="addResourceModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Add Resource</h2>
-        <form id="addResourceForm">
-            <label for="resourceName">Resource Name:</label>
-            <input type="text" id="resourceName" required><br><br>
+    <!-- Add Resource Modal -->
+    <div id="addResourceModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add Resource</h2>
+            <form id="addResourceForm">
+                <label for="resourceName">Resource Name:</label>
+                <input type="text" id="resourceName" required>
 
-            <label for="resourceDetails">Resource Details:</label>
-            <textarea id="resourceDetails" rows="4" required></textarea><br><br>
+                <label for="resourceDetails">Resource Details:</label>
+                <textarea id="resourceDetails" rows="4" required></textarea>
 
-            <label for="additionalDetails">Additional Resource Details:</label>
-            <input type="text" id="additionalDetails"><br><br>
+                <label for="additionalDetails">Additional Resource Details:</label>
+                <input type="text" id="additionalDetails">
 
-            <label for="pdfUpload">Upload PDF:</label>
-            <input type="file" id="pdfUpload" accept=".pdf"><br><br>
+                <label for="pdfUpload">Upload PDF:</label>
+                <input type="file" id="pdfUpload" accept=".pdf">
 
-            <div id="pdfActions" style="display: none;">
-                <button type="button" id="viewPdfBtn">View PDF</button>
-                <button type="button" id="deletePdfBtn">Delete PDF</button>
-            </div>
-
-            <button type="submit">Save Resource</button>
-        </form>
+                <div id="pdfActions" style="display: none; margin-top: 10px;">
+                    <button type="button" id="viewPdfBtn">View PDF</button>
+                    <button type="button" id="deletePdfBtn">Delete PDF</button>
+                </div>
+                <button type="submit" style="margin-top: 15px;">Save Resource</button>
+            </form>
+        </div>
     </div>
-</div>
 
-<!-- Resource Table (Hidden initially) -->
-<div id="resourceTable" class="resource-table" style="display:none;">
-    <div class="resource-header">
-        <div>Resource Name</div>
-        <div>Resource Details</div>
-        <div>Additional Resource Details</div>
-        <div>Request Resource ID</div>
-        <div>PDF</div>
-        <div>Action</div>
+    <!-- Resource Table -->
+    <div id="resourceTable" class="resource-table" style="display:none;">
+        <div class="resource-header">
+            <div>Resource Name</div>
+            <div>Resource Details</div>
+            <div>Additional Resource Details</div>
+            <div>Request Resource ID</div>
+            <div>PDF</div>
+            <div>Action</div>
+        </div>
+        <div id="resourceContainer"></div>
     </div>
-    <div id="resourceContainer"></div>
-</div>
 
     <script src="AdminScript.js"></script>
 </body>
