@@ -222,6 +222,41 @@
 </div>
 
     <script>
+      // Function to handle the "View PDF" button click
+  document.getElementById('viewPdfBtn').addEventListener('click', function () {
+    const pdfInput = document.getElementById('pdfUpload');
+    if (pdfInput.files.length > 0) {
+      const uploadedFile = pdfInput.files[0];
+      if (uploadedFile.type === 'application/pdf') {
+        const fileURL = URL.createObjectURL(uploadedFile);
+        window.open(fileURL, '_blank');
+      } else {
+        alert('Please upload a valid PDF file.');
+      }
+    } else {
+      alert('No PDF file uploaded. Please upload one to view.');
+    }
+  });
+
+  // Function to handle the "Delete PDF" button click
+  document.getElementById('deletePdfBtn').addEventListener('click', function () {
+    const pdfInput = document.getElementById('pdfUpload');
+    const pdfActions = document.getElementById('pdfActions');
+    pdfInput.value = ''; // Reset the input
+    pdfActions.style.display = 'none';
+    alert('PDF file has been deleted.');
+  });
+
+  // Listener for file uploads
+  document.getElementById('pdfUpload').addEventListener('change', function () {
+    const pdfActions = document.getElementById('pdfActions');
+    if (this.files.length > 0 && this.files[0].type === 'application/pdf') {
+      pdfActions.style.display = 'flex'; // Show buttons
+    } else {
+      pdfActions.style.display = 'none'; // Hide buttons if invalid file
+      alert('Please upload a valid PDF file.');
+    }
+  });
         // JavaScript code for resources
         const resources = []; // Array to store resources
 
