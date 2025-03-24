@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const supabaseUrl = "https://fsjyzxygoyuxetzkpolo.supabase.co";
     const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMDI5MjQsImV4cCI6MjA1Nzc3ODkyNH0.qD8cyG3ZxAieUdFU05NOI661JGTv7lA5NIyoTTJCL6k";
 
-    // ✅ Initialize Supabase AFTER ensuring it's loaded
+    // ✅ Initialize Supabase
     window.supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
     console.log("Supabase initialized:", window.supabaseClient);
 
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ✅ Function to Register User
     async function registerUser() {
-        const FirstName = document.getElementById("name").value.trim(); // Adjusted variable names
+        const FirstName = document.getElementById("name").value.trim();
         const LastName = document.getElementById("surname").value.trim();
         const Username = document.getElementById("username").value.trim();
         const Email = document.getElementById("email").value.trim();
@@ -66,21 +66,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const user = data.user;
             if (!user) {
-                throw new Error("User registration failed.");
+                throw new Error("User registration successful, but no user ID available.");
             }
 
             console.log("User registered, inserting into UserTable...", user.id);
 
-            // ✅ Step 2: Insert User Data into Custom `UserTable`
+            // ✅ Step 2: Insert User Data into Custom `UserTable` (Wrap Column Names in Quotes)
             const { error: insertError } = await window.supabaseClient
-                .from("UserTable") // Your custom table
+                .from("UserTable")
                 .insert([{ 
-                    id: user.id, // Store user ID from auth.users
-                    FirstName: FirstName,
-                    LastName: LastName,
-                    Username: Username,
-                    Email: Email,
-                    Password: Password // Consider hashing before storing
+                    "id": user.id, 
+                    "FirstName": FirstName,  
+                    "LastName": LastName,
+                    "Username": Username,
+                    "Email": Email,  
+                    "Password": Password
                 }]);
 
             if (insertError) throw insertError;
