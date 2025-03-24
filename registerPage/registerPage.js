@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 password: Password,
                 options: {
                     data: { FirstName, LastName, Username },
-                    emailRedirectTo: "./loginPage/loginPage.html"
+                    emailRedirectTo: "https://studylocker-gg.netlify.app/loginpage/loginpage"
                 }
             });
 
@@ -71,17 +71,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             console.log("User registered, inserting into UserTable...", user.id);
 
-            // ✅ Step 2: Insert User Data into Custom `UserTable` (Wrap Column Names in Quotes)
+            // ✅ Step 2: Insert User Data into Custom `UserTable` (Column Names Fixed)
             const { error: insertError } = await window.supabaseClient
-                .from("UserTable")
-                .insert([{ 
-                    "id": user.id, 
-                    "FirstName": FirstName,  
-                    "LastName": LastName,
-                    "Username": Username,
-                    "Email": Email,  
-                    "Password": Password
-                }]);
+            .from("UserTable")
+            .insert([{ 
+            "FirstName": FirstName,  
+            "LastName": LastName,
+            "Username": Username,
+            "Email": Email,  
+            "Password": Password
+            }]);
+
 
             if (insertError) throw insertError;
 
