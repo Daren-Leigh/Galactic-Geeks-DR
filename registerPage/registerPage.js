@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     surname: surname,
                     username: username,
                     email: email,
-                    created_at: new Date()
+                    //created_at: new Date()
                 }]);
 
             if (insertError) throw insertError;
