@@ -14,6 +14,63 @@ const apolloClient = new ApolloClient({
     cache: new InMemoryCache(),
     headers: { Authorization: `Bearer ${SUPABASE_KEY}` },
 });
+
+const historyData = {
+    deletedResources: [],
+    savedResources: []
+  };
+
+  // Select elements
+  const historyButton = document.getElementById('historyButton');
+  const historyPopup = document.getElementById('historyPopup');
+  const closePopupButton = document.getElementById('closePopup');
+  const deletedResourcesList = document.getElementById('deletedResources');
+  const savedResourcesList = document.getElementById('savedResources');
+
+  // Open popup
+  historyButton.addEventListener('click', () => {
+    updateHistoryList();
+    historyPopup.classList.remove('hidden');
+  });
+
+  // Close popup
+  closePopupButton.addEventListener('click', () => {
+    historyPopup.classList.add('hidden');
+  });
+
+  // Function to update the history list
+  function updateHistoryList() {
+    // Clear the existing lists
+    deletedResourcesList.innerHTML = '';
+    savedResourcesList.innerHTML = '';
+
+    // Populate Deleted Resources
+    historyData.deletedResources.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = `${item.resourceName} - ${item.dateTime}`;
+      deletedResourcesList.appendChild(li);
+    });
+
+    // Populate Saved Resources
+    historyData.savedResources.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = `${item.resourceName} - ${item.dateTime}`;
+      savedResourcesList.appendChild(li);
+    });
+  }
+
+// script.js
+document.getElementById('searchButton').addEventListener('click', function () {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+
+    if (searchTerm) {
+      document.getElementById('result').textContent = `You searched for: "${searchTerm}"`;
+    } else {
+      document.getElementById('result').textContent = 'Please enter a search term.';
+    }
+  });
+
+
 // Handle form submission
 document
 .getElementById("save-btn")
@@ -23,7 +80,7 @@ document
   try {
     // Insert the resource name into your Supabase table
     const { data, error } = await supabase
-      .from("resources") // Replace "resources" with your table name
+      .from("ResourceTable") // Replace "resources" with your table name
       .insert([{ name: resourceName },{ details: resourceDetails },{ details: additionalDetails },{ ID: requestResourceID}]); // Adjust the column name if necessary
 
     if (error) throw error;
