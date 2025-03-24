@@ -6,62 +6,55 @@
   <title>Dashboard</title>
 
   <style>
-    /* Basic styling for the entire page */
     body {
-      background-color: #574B60; /* Dark background */
+      background-color: #574B60;
       color: white;
-      font-family: Arial, sans-serif; /* Clean, readable font */
+      font-family: Arial, sans-serif;
     }
 
-    /* Styling for the top navigation bar */
     .navbar, .footer {
       width: 100%;
       height: 60px;
-      background-color: #F3752B; /* Orange color */
+      background-color: #F3752B;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
     }
 
-    /* Container to center the dashboard content */
     .userDashboardContainer {
       display: flex;
       justify-content: center;
       align-content: center;
     }
 
-    /* Main dashboard content styling */
     .userDashboardContent {
       width: 80%;
-      min-height: 50vh; /* Ensures it has a minimum height */
+      min-height: 50vh;
       padding: 2vh;
       background-color: #574B60;
-      border: 3px solid white; /* White border for contrast */
+      border: 3px solid white;
       display: flex;
-      flex-wrap: wrap; /* Allows resources to wrap when screen size is small */
-      gap: 20px; /* Space between resource cards */
-      justify-content: center; /* Centers the cards */
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
     }
 
-    /* Individual resource card styling */
     .resource-card {
       background-color: #F3752B;
       color: white;
       padding: 15px;
-      border-radius: 8px; /* Rounded corners */
+      border-radius: 8px;
       width: 250px;
       text-align: center;
-      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2); /* Adds a shadow for depth */
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s ease-in-out;
     }
 
-    /* Hover effect to slightly enlarge the card */
     .resource-card:hover {
       transform: scale(1.05);
     }
 
-    /* Styling for resource links */
     .resource-card a {
       display: block;
       margin-top: 10px;
@@ -73,19 +66,16 @@
       font-weight: bold;
     }
 
-    /* Change background on hover */
     .resource-card a:hover {
       background: #ddd;
     }
 
-    /* Adjusting content width for medium screens */
     @media (max-width: 1200px) {
       .userDashboardContent {
         width: 90%;
       }
     }
 
-    /* Adjusting content width for smaller screens */
     @media (max-width: 1000px) {
       .userDashboardContent {
         width: 100%;
@@ -95,87 +85,67 @@
 </head>
 <body>
 
-  <!-- Navigation bar at the top -->
   <div class="navbar">Dashboard</div>
 
-  <!-- Main dashboard area -->
   <div class="userDashboardContainer">    
     <div class="userDashboardContent" id="resourceContainer">
-      Loading resources... <!-- This will be replaced dynamically -->
+      Loading resources...
     </div>
   </div>
 
-  <!-- Footer at the bottom -->
   <div class="footer">Footer</div>
 
-  <!-- Include Supabase JavaScript SDK from a CDN -->
+  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <script>
-    // 🔹 Supabase Initialization: Connects the frontend to Supabase database
+    // Supabase Initialization with Your Keys
     const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMDI5MjQsImV4cCI6MjA1Nzc3ODkyNH0.qD8cyG3ZxAieUdFU05NOI661JGTv7lA5NIyoTTJCL6k'; // 🔹 Client API Key (For Frontend)
+    const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjIwMjkyNCwiZXhwIjoyMDU3Nzc4OTI0fQ.XgpwK52aXIJNZtHUDgSfD1ThR186gNF7K_NQ0kobsuM'; // 🔹 Service Key (Only for Backend)
 
-    // 🔹 Supabase Client API Key (Only for frontend use, not sensitive)
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMDI5MjQsImV4cCI6MjA1Nzc4OTI0NH0.qD8cyG3ZxAieUdFU05NOI661JGTv7lA5NIyoTTJCL6k';
-
-    // 🔹 Supabase Service Key (⚠️ Only use on backend, NOT in frontend code)
-    const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjIwMjkyNCwiZXhwIjoyMDU3Nzc4OTI0fQ.XgpwK52aXIJNZtHUDgSfD1ThR186gNF7K_NQ0kobsuM';
-
-    // 🔹 Creating the Supabase client instance to interact with the database
+    // Creating Supabase Client
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 🔹 Function to Fetch Resources from Supabase Database
     async function fetchResources() {
       const container = document.getElementById('resourceContainer');
-
-      // Display a loading message while fetching data
       container.innerHTML = '<p>Loading resources...</p>';
 
       try {
-        // 🔹 Querying the 'ResourceTable' to get the ResourceName & ResourceLink
         const { data: resources, error } = await supabase
-          .from('ResourceTable')  // Table name (ensure it matches your Supabase schema)
+          .from('ResourceTable')  // Make sure this matches your actual table name
           .select('ResourceName, ResourceLink');
 
-        // 🔹 If there's an error in the query, throw it
         if (error) {
           throw error;
         }
 
-        // 🔹 Clear existing content before inserting new resources
         container.innerHTML = '';
 
-        // 🔹 Check if resources exist, if not, show "No resources found"
         if (!resources || resources.length === 0) {
           container.innerHTML = '<p>No resources found.</p>';
           return;
         }
 
-        // 🔹 Loop through each resource and create a card dynamically
         resources.forEach(resource => {
-          // Create a new div for each resource
           const card = document.createElement('div');
-          card.classList.add('resource-card'); // Add CSS class
+          card.classList.add('resource-card');
 
-          // Set the inner HTML of the card
           card.innerHTML = `
             <h3>${resource.ResourceName}</h3>
             <a href="${resource.ResourceLink}" target="_blank">Visit Resource</a>
           `;
 
-          // Append the card to the resource container
           container.appendChild(card);
         });
 
       } catch (err) {
         console.error('Error loading resources:', err.message);
-
-        // Display error message on the UI
         container.innerHTML = '<p>Error loading resources.</p>';
       }
     }
 
-    // 🔹 Ensure resources load when the page is fully loaded
+    // Ensure fetching occurs after page load
     window.onload = fetchResources;
   </script>
 
