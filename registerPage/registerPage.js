@@ -52,19 +52,40 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            // ✅ Register the user in Supabase
+            // ✅ Step 1: Register the user in Supabase Auth
             const { data, error } = await window.supabaseClient.auth.signUp({
                 email: email,
                 password: password,
                 options: {
                     data: { name, surname, username },
-                    emailRedirectTo: "./loginPage/loginPage.html" // Change to your actual redirect page
+                    emailRedirectTo: "https://studylocker-gg.netlify.app/loginPage/loginPage"
                 }
             });
 
             if (error) throw error;
 
-            // ✅ Explicitly send a verification email (optional)
+            const user = data.user;
+            if (!user) {
+                throw new Error("User registration failed.");
+            }
+
+            console.log("User registered, inserting into UserTable...", user.id);
+
+            // ✅ Step 2: Insert User Data into Custom `UserTable`
+            const { error: insertError } = await window.supabaseClient
+                .from("UserTable") // Your custom table
+                .insert([{ 
+                    id: user.id, // Store user ID from auth.users
+                    name: name,
+                    surname: surname,
+                    username: username,
+                    email: email,
+                    created_at: new Date()
+                }]);
+
+            if (insertError) throw insertError;
+
+            // ✅ Step 3: Send Verification Email
             await sendVerificationEmail(email);
 
             showMessage("Registration successful! Check your email to verify your account.", "success");
