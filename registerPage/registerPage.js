@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 password: password,
                 options: {
                     data: { name, surname, username },
-                    emailRedirectTo: "http://127.0.0.1:5500/loginPage.html" // Change to your actual redirect page
+                    emailRedirectTo: "./loginPage/loginPage.html" // Change to your actual redirect page
                 }
             });
 
