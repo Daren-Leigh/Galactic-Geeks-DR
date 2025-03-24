@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const supabaseUrl = "https://fsjyzxygoyuxetzkpolo.supabase.co";
     const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMDI5MjQsImV4cCI6MjA1Nzc3ODkyNH0.qD8cyG3ZxAieUdFU05NOI661JGTv7lA5NIyoTTJCL6k";
 
-    // ✅ Initialize Supabase AFTER ensuring it's loaded
+    // ✅ Initialize Supabase
     window.supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
     console.log("Supabase initialized:", window.supabaseClient);
 
@@ -34,38 +34,59 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ✅ Function to Register User
     async function registerUser() {
-        const name = document.getElementById("name").value.trim();
-        const surname = document.getElementById("surname").value.trim();
-        const username = document.getElementById("username").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
+        const FirstName = document.getElementById("name").value.trim();
+        const LastName = document.getElementById("surname").value.trim();
+        const Username = document.getElementById("username").value.trim();
+        const Email = document.getElementById("email").value.trim();
+        const Password = document.getElementById("password").value;
+        const ConfirmPassword = document.getElementById("confirm-password").value;
 
-        if (!name || !surname || !username || !email || !password || !confirmPassword) {
+        if (!FirstName || !LastName || !Username || !Email || !Password || !ConfirmPassword) {
             showMessage("Please fill in all fields.", "error");
             return;
         }
 
-        if (password !== confirmPassword) {
+        if (Password !== ConfirmPassword) {
             showMessage("Passwords do not match.", "error");
             return;
         }
 
         try {
-            // ✅ Register the user in Supabase
+            // ✅ Step 1: Register the user in Supabase Auth
             const { data, error } = await window.supabaseClient.auth.signUp({
-                email: email,
-                password: password,
+                email: Email,
+                password: Password,
                 options: {
-                    data: { name, surname, username },
-                    emailRedirectTo: "./loginPage/loginPage.html" // Change to your actual redirect page
+                    data: { FirstName, LastName, Username },
+                    emailRedirectTo: "https://studylocker-gg.netlify.app/loginpage/loginpage"
                 }
             });
 
             if (error) throw error;
 
-            // ✅ Explicitly send a verification email (optional)
-            await sendVerificationEmail(email);
+            const user = data.user;
+            if (!user) {
+                throw new Error("User registration successful, but no user ID available.");
+            }
+
+            console.log("User registered, inserting into UserTable...", user.id);
+
+            // ✅ Step 2: Insert User Data into Custom `UserTable` (Column Names Fixed)
+            const { error: insertError } = await window.supabaseClient
+            .from("UserTable")
+            .insert([{ 
+            "FirstName": FirstName,  
+            "LastName": LastName,
+            "Username": Username,
+            "Email": Email,  
+            "Password": Password
+            }]);
+
+
+            if (insertError) throw insertError;
+
+            // ✅ Step 3: Send Verification Email
+            await sendVerificationEmail(Email);
 
             showMessage("Registration successful! Check your email to verify your account.", "success");
 
