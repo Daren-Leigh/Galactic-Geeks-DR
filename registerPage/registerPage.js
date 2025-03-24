@@ -34,19 +34,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ✅ Function to Register User
     async function registerUser() {
-        const name = document.getElementById("name").value.trim();
-        const surname = document.getElementById("surname").value.trim();
-        const username = document.getElementById("username").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
+        const FirstName = document.getElementById("name").value.trim(); // Adjusted variable names
+        const LastName = document.getElementById("surname").value.trim();
+        const Username = document.getElementById("username").value.trim();
+        const Email = document.getElementById("email").value.trim();
+        const Password = document.getElementById("password").value;
+        const ConfirmPassword = document.getElementById("confirm-password").value;
 
-        if (!name || !surname || !username || !email || !password || !confirmPassword) {
+        if (!FirstName || !LastName || !Username || !Email || !Password || !ConfirmPassword) {
             showMessage("Please fill in all fields.", "error");
             return;
         }
 
-        if (password !== confirmPassword) {
+        if (Password !== ConfirmPassword) {
             showMessage("Passwords do not match.", "error");
             return;
         }
@@ -54,11 +54,11 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             // ✅ Step 1: Register the user in Supabase Auth
             const { data, error } = await window.supabaseClient.auth.signUp({
-                email: email,
-                password: password,
+                email: Email,
+                password: Password,
                 options: {
-                    data: { name, surname, username },
-                    emailRedirectTo: "https://studylocker-gg.netlify.app/loginPage/loginPage"
+                    data: { FirstName, LastName, Username },
+                    emailRedirectTo: "./loginPage/loginPage.html"
                 }
             });
 
@@ -76,17 +76,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 .from("UserTable") // Your custom table
                 .insert([{ 
                     id: user.id, // Store user ID from auth.users
-                    name: name,
-                    surname: surname,
-                    username: username,
-                    email: email,
-                    //created_at: new Date()
+                    FirstName: FirstName,
+                    LastName: LastName,
+                    Username: Username,
+                    Email: Email,
+                    Password: Password // Consider hashing before storing
                 }]);
 
             if (insertError) throw insertError;
 
             // ✅ Step 3: Send Verification Email
-            await sendVerificationEmail(email);
+            await sendVerificationEmail(Email);
 
             showMessage("Registration successful! Check your email to verify your account.", "success");
 
