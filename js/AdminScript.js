@@ -14,7 +14,64 @@ const apolloClient = new ApolloClient({
     cache: new InMemoryCache(),
     headers: { Authorization: `Bearer ${SUPABASE_KEY}` },
 });
+// Handle form submission
+document
+.getElementById("save-btn")
+.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Prevent default form submission behavior
 
+  try {
+    // Insert the resource name into your Supabase table
+    const { data, error } = await supabase
+      .from("resources") // Replace "resources" with your table name
+      .insert([{ name: resourceName },{ details: resourceDetails },{ details: additionalDetails },{ ID: requestResourceID}]); // Adjust the column name if necessary
+
+    if (error) throw error;
+
+    // Success message or action
+    alert("Resource saved successfully!");
+    console.log("Saved resource:", data);
+
+    // Optionally, reset the form
+    document.getElementById("save-btn").reset();
+  } catch (err) {
+    console.error("Error saving resource:", err.message);
+    alert("Failed to save resource.");
+  }
+});
+// Add a click event listener to the "Load Resources" button
+document
+.getElementById("load-resources-btn")
+.addEventListener("click", async () => {
+  try {
+    // Fetch all data from the "resources" table
+    const { data, error } = await supabase
+      .from("resources") // Replace with your table name
+      .select("*"); // Retrieve all columns (use specific columns if needed)
+
+    if (error) throw error;
+
+    // Display resources in the <ul> list
+    const resourcesList = document.getElementById("resources-list");
+    resourcesList.innerHTML = ""; // Clear the list before appending the new data
+
+    data.forEach((resource) => {
+      const listItem = document.createElement("li");
+      listItem.textContent = resource.name; // Adjust column name to match your table
+      listItem.style.padding = "8px 0";
+      resourcesList.appendChild(listItem);
+    });
+
+    if (data.length === 0) {
+      alert("No resources found!");
+    } else {
+      alert("Resources loaded successfully!");
+    }
+  } catch (err) {
+    console.error("Error retrieving resources:", err.message);
+    alert("Failed to load resources. Check the console for details.");
+  }
+});
 // GraphQL query to fetch resource usage and request statistics
 const GET_RESOURCE_STATS = gql`
     query GetResourceStats {
