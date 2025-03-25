@@ -24,26 +24,21 @@ async function loginUser() {
         console.log("User logged in successfully:", data);
         console.log("User token:", data.session.access_token);
 
-        // ✅ Fetch user role from Supabase
+        // ✅ Get user ID from Supabase
         const userId = data.user.id;
-        const { data: userRoleData, error: roleError } = await supabase
-            .from("users")  // Replace with your actual table name
-            .select("role") // Ensure your database has a "role" column
+
+        // ✅ Check if the user exists in the `admins` table
+        const { data: adminData, error: adminError } = await supabase
+            .from("admins")  // Replace with your actual admin table name
+            .select("id")
             .eq("id", userId)
             .single();
 
-        if (roleError) {
-            console.error("Error fetching user role:", roleError);
-            showMessage("Error fetching user role. Please try again.", "error");
-            return;
-        }
-
-        console.log("User role:", userRoleData.role);
-
-        // ✅ Redirect based on role
-        if (userRoleData.role === "admin") {
+        if (adminData) {
+            console.log("Admin detected, redirecting...");
             window.location.href = "https://studylocker-gg.netlify.app/adminDashboard";
         } else {
+            console.log("Regular user detected, redirecting...");
             window.location.href = "https://studylocker-gg.netlify.app/userDashboard";
         }
     }
@@ -65,25 +60,20 @@ async function verifyOtp() {
     } else {
         console.log("OTP verified successfully:", data);
 
-        // ✅ Fetch user role from Supabase
         const userId = data.user.id;
-        const { data: userRoleData, error: roleError } = await supabase
-            .from("users")  
-            .select("role") 
+
+        // ✅ Check if user exists in `admins` table
+        const { data: adminData, error: adminError } = await supabase
+            .from("admins")  
+            .select("id")
             .eq("id", userId)
             .single();
 
-        if (roleError) {
-            console.error("Error fetching user role:", roleError);
-            showMessage("Error fetching user role. Please try again.", "error");
-            return;
-        }
-
-        console.log("User role:", userRoleData.role);
-
-        if (userRoleData.role === "admin") {
+        if (adminData) {
+            console.log("Admin detected, redirecting...");
             window.location.href = "https://studylocker-gg.netlify.app/adminDashboard";
         } else {
+            console.log("Regular user detected, redirecting...");
             window.location.href = "https://studylocker-gg.netlify.app/userDashboard";
         }
     }
