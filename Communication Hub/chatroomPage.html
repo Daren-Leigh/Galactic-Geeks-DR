@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatroom</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script type="module" src="chatroomPage.js" defer></script>
+    <link rel="stylesheet" href="communicationStyle.css">
+</head>
+<body>
+    <div class="navbar">💬 Chatroom</div>
+    <div id="chatroom-container">
+        <button onclick="goBack()">← Back to Forums</button>
+        <h1 id="forum-title">Chatroom</h1>
+        <div id="chat-messages"></div> <!-- Ensure the ID matches the JS -->
+        <input type="text" id="message-input" placeholder="Type a message...">
+        <button id="send-button">Send</button> <!-- Add the ID 'send-button' -->
+    </div>
+    <div class="footer">StudyLocker © 2025</div>
+</body>
+</html>
