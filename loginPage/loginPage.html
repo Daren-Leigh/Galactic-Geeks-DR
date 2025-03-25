@@ -1,38 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-
-    <!-- ✅ Load Supabase Client FIRST -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-    <!-- ✅ Link CSS -->
-    <link rel="stylesheet" href="loginPage.css">
-
-    <!-- ✅ Load JavaScript AFTER Supabase is Available -->
-    <script src="loginPage.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <style>
+    body {
+      background-color: #574B60;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    .navbar, .footer {
+      width: 100%;
+      height: 60px;
+      background-color: #F3752B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .userDashboardContainer {
+      display: flex;
+      justify-content: center;
+      align-content: center;
+    }
+    .userDashboardContent {
+      width: 80%;
+      min-height: 50vh;
+      padding: 2vh;
+      background-color: #574B60;
+      border: 3px solid white;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .resource-card {
+      background-color: #F3752B;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      width: 250px;
+      text-align: center;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease-in-out;
+    }
+    .resource-card:hover {
+      transform: scale(1.05);
+    }
+    .resource-card a {
+      display: block;
+      margin-top: 10px;
+      padding: 8px;
+      background: white;
+      color: #F3752B;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .resource-card a:hover {
+      background: #ddd;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Login</h2>
+  <div class="navbar">Dashboard</div>
+  <div class="userDashboardContainer">    
+    <div class="userDashboardContent" id="resourceContainer">Loading resources...</div>
+  </div>
+  <div class="footer">Footer</div>
 
-        <div id="message-box"></div> <!-- Message Box for Errors/Success -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
+    const SUPABASE_KEY = 'YOUR_PUBLIC_ANON_KEY'; // 🔹 Use a valid API key (do not expose service key!)
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        <input type="email" id="login-email" placeholder="Email">
-        <input type="password" id="login-password" placeholder="Password">
-        <button id="login-btn">Login</button>
+    async function fetchResources() {
+      const container = document.getElementById('resourceContainer');
+      container.innerHTML = '<p>Loading resources...</p>';
 
-        <h3>Or Login with OTP</h3>
-        <input type="text" id="login-phone" placeholder="Phone Number">
-        <input type="text" id="login-otp" placeholder="Enter OTP">
-        <button id="otp-btn">Verify OTP</button>
+      try {
+        // 🔹 Fetch all available resources
+        const { data: resources, error: resourceError } = await supabase
+          .from('ResourceTable')
+          .select('ResourceID, ResourceName, ResourceLink');
+        
+        if (resourceError) throw resourceError;
 
-        <p>Don't have an account? <a href="registerPage.html">Register</a></p>
-    </div>
+        // 🔹 Fetch the logged-in user's ID
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) throw new Error('User not authenticated');
 
-    <!-- ✅ Load JavaScript LAST for performance -->
-    <script type="module" src="loginPage.js"></script>
+        const userId = user.id; // Assuming UserID is stored as a UUID
+        
+        // 🔹 Get resources allocated to this user
+        const { data: allocatedResources, error: allocationError } = await supabase
+          .from('AllocationTable')
+          .select('ResourceID')
+          .eq('UserID', userId);
+        
+        if (allocationError) throw allocationError;
+        
+        // 🔹 Convert allocated resources to a set for quick lookup
+        const allocatedResourceIds = new Set(allocatedResources.map(r => r.ResourceID));
+        
+        container.innerHTML = '';
+
+        if (!resources || resources.length === 0) {
+          container.innerHTML = '<p>No resources found.</p>';
+          return;
+        }
+
+        resources.forEach(resource => {
+          const card = document.createElement('div');
+          card.classList.add('resource-card');
+          
+          // 🔹 Check if the user has access to the resource
+          const isAllocated = allocatedResourceIds.has(resource.ResourceID);
+          
+          card.innerHTML = `
+            <h3>${resource.ResourceName}</h3>
+            <a href="${isAllocated ? resource.ResourceLink : '#'}" 
+               target="${isAllocated ? '_blank' : '_self'}" 
+               class="resource-btn" 
+               data-id="${resource.ResourceID}">
+              ${isAllocated ? 'Download' : 'Request'}
+            </a>
+          `;
+          
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Error loading resources:', err.message);
+        container.innerHTML = '<p>Error loading resources.</p>';
+      }
+    }
+
+    window.onload = fetchResources;
+  </script>
 </body>
 </html>
