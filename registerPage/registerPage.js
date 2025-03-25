@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (error) throw error;
 
             showMessage("Verification email sent! Check your inbox.", "success");
-
         } catch (err) {
             showMessage(`Error sending verification email: ${err.message}`, "error");
         }
@@ -52,13 +51,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            // ✅ Step 1: Register the user in Supabase Auth
+            // ✅ Step 1: Register the user with metadata
             const { data, error } = await window.supabaseClient.auth.signUp({
                 email: Email,
                 password: Password,
                 options: {
-                    data: { FirstName, LastName, Username },
-                    emailRedirectTo: "https://studylocker-gg.netlify.app/loginpage/loginpage"
+                    data: { 
+                        FirstName, 
+                        LastName, 
+                        Username // ✅ This will be stored in `user_metadata`
+                    },
+                    emailRedirectTo: "https://studylocker-gg.netlify.app/loginpage/loginpage"  
                 }
             });
 
@@ -69,19 +72,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 throw new Error("User registration successful, but no user ID available.");
             }
 
-            console.log("User registered, inserting into UserTable...", user.id);
+            console.log("User registered with metadata:", user);
 
-            // ✅ Step 2: Insert User Data into Custom `UserTable` (Column Names Fixed)
+            // ✅ Step 2: Insert User Data into Custom `UserTable`
             const { error: insertError } = await window.supabaseClient
             .from("UserTable")
             .insert([{ 
-            "FirstName": FirstName,  
-            "LastName": LastName,
-            "Username": Username,
-            "Email": Email,  
-            "Password": Password
+                "FirstName": FirstName,  
+                "LastName": LastName,
+                "Username": Username,
+                "Email": Email,  
+                "Password": Password
             }]);
-
 
             if (insertError) throw insertError;
 
@@ -95,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ✅ Function to Show Messages
     function showMessage(msg, type) {
         const messageBox = document.getElementById("message-box");
         messageBox.innerHTML = msg;

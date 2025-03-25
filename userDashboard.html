@@ -4,14 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard</title>
-
   <style>
     body {
       background-color: #574B60;
       color: white;
       font-family: Arial, sans-serif;
     }
-
     .navbar, .footer {
       width: 100%;
       height: 60px;
@@ -21,13 +19,11 @@
       justify-content: center;
       font-weight: bold;
     }
-
     .userDashboardContainer {
       display: flex;
       justify-content: center;
       align-content: center;
     }
-
     .userDashboardContent {
       width: 80%;
       min-height: 50vh;
@@ -39,7 +35,6 @@
       gap: 20px;
       justify-content: center;
     }
-
     .resource-card {
       background-color: #F3752B;
       color: white;
@@ -50,11 +45,9 @@
       box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s ease-in-out;
     }
-
     .resource-card:hover {
       transform: scale(1.05);
     }
-
     .resource-card a {
       display: block;
       margin-top: 10px;
@@ -65,61 +58,54 @@
       border-radius: 5px;
       font-weight: bold;
     }
-
     .resource-card a:hover {
       background: #ddd;
-    }
-
-    @media (max-width: 1200px) {
-      .userDashboardContent {
-        width: 90%;
-      }
-    }
-
-    @media (max-width: 1000px) {
-      .userDashboardContent {
-        width: 100%;
-      }
     }
   </style>
 </head>
 <body>
-
   <div class="navbar">Dashboard</div>
-
   <div class="userDashboardContainer">    
-    <div class="userDashboardContent" id="resourceContainer">
-      Loading resources...
-    </div>
+    <div class="userDashboardContent" id="resourceContainer">Loading resources...</div>
   </div>
-
   <div class="footer">Footer</div>
 
-  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
   <script>
-    // Supabase Initialization with Your Keys
-    const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
+   const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMDI5MjQsImV4cCI6MjA1Nzc3ODkyNH0.qD8cyG3ZxAieUdFU05NOI661JGTv7lA5NIyoTTJCL6k'; // 🔹 Client API Key (For Frontend)
     const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjIwMjkyNCwiZXhwIjoyMDU3Nzc4OTI0fQ.XgpwK52aXIJNZtHUDgSfD1ThR186gNF7K_NQ0kobsuM'; // 🔹 Service Key (Only for Backend)
-
-    // Creating Supabase Client
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function fetchResources() {
       const container = document.getElementById('resourceContainer');
       container.innerHTML = '<p>Loading resources...</p>';
 
       try {
-        const { data: resources, error } = await supabase
-          .from('ResourceTable')  // Make sure this matches your actual table name
-          .select('ResourceName, ResourceLink');
+        // 🔹 Fetch all available resources
+        const { data: resources, error: resourceError } = await supabase
+          .from('ResourceTable')
+          .select('ResourceID, ResourceName, ResourceLink');
+        
+        if (resourceError) throw resourceError;
 
-        if (error) {
-          throw error;
-        }
+        // 🔹 Fetch the logged-in user's ID
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) throw new Error('User not authenticated');
 
+        const userId = user.id; // Assuming UserID is stored as a UUID
+        
+        // 🔹 Get resources allocated to this user
+        const { data: allocatedResources, error: allocationError } = await supabase
+          .from('AllocationTable')
+          .select('ResourceID')
+          .eq('UserID', userId);
+        
+        if (allocationError) throw allocationError;
+        
+        // 🔹 Convert allocated resources to a set for quick lookup
+        const allocatedResourceIds = new Set(allocatedResources.map(r => r.ResourceID));
+        
         container.innerHTML = '';
 
         if (!resources || resources.length === 0) {
@@ -130,24 +116,29 @@
         resources.forEach(resource => {
           const card = document.createElement('div');
           card.classList.add('resource-card');
-
+          
+          // 🔹 Check if the user has access to the resource
+          const isAllocated = allocatedResourceIds.has(resource.ResourceID);
+          
           card.innerHTML = `
             <h3>${resource.ResourceName}</h3>
-            <a href="${resource.ResourceLink}" target="_blank">Visit Resource</a>
+            <a href="${isAllocated ? resource.ResourceLink : '#'}" 
+               target="${isAllocated ? '_blank' : '_self'}" 
+               class="resource-btn" 
+               data-id="${resource.ResourceID}">
+              ${isAllocated ? 'Download' : 'Request'}
+            </a>
           `;
-
+          
           container.appendChild(card);
         });
-
       } catch (err) {
         console.error('Error loading resources:', err.message);
         container.innerHTML = '<p>Error loading resources.</p>';
       }
     }
 
-    // Ensure fetching occurs after page load
     window.onload = fetchResources;
   </script>
-
 </body>
 </html>
