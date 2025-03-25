@@ -65,7 +65,7 @@
 </head>
 <body>
   <div class="navbar">Dashboard</div>
-  <div class="userDashboardContainer">    
+  <div class="userDashboardContainer">
     <div class="userDashboardContent" id="resourceContainer">Loading resources...</div>
   </div>
   <div class="footer">Footer</div>
@@ -86,7 +86,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const { data: resources, error: resourceError } = await supabase
           .from('ResourceTable')
           .select('ResourceID, ResourceName, ResourceLink');
-        
+
         if (resourceError) throw resourceError;
 
         // 🔹 Fetch the logged-in user's ID
@@ -94,18 +94,18 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         if (userError || !user) throw new Error('User not authenticated');
 
         const userId = user.id; // Assuming UserID is stored as a UUID
-        
+
         // 🔹 Get resources allocated to this user
         const { data: allocatedResources, error: allocationError } = await supabase
           .from('AllocationTable')
           .select('ResourceID')
           .eq('UserID', userId);
-        
+
         if (allocationError) throw allocationError;
-        
+
         // 🔹 Convert allocated resources to a set for quick lookup
         const allocatedResourceIds = new Set(allocatedResources.map(r => r.ResourceID));
-        
+
         container.innerHTML = '';
 
         if (!resources || resources.length === 0) {
@@ -116,20 +116,20 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         resources.forEach(resource => {
           const card = document.createElement('div');
           card.classList.add('resource-card');
-          
+
           // 🔹 Check if the user has access to the resource
           const isAllocated = allocatedResourceIds.has(resource.ResourceID);
-          
+
           card.innerHTML = `
             <h3>${resource.ResourceName}</h3>
-            <a href="${isAllocated ? resource.ResourceLink : '#'}" 
-               target="${isAllocated ? '_blank' : '_self'}" 
-               class="resource-btn" 
+            <a href="${isAllocated ? resource.ResourceLink : '#'}"
+               target="${isAllocated ? '_blank' : '_self'}"
+               class="resource-btn"
                data-id="${resource.ResourceID}">
               ${isAllocated ? 'Download' : 'Request'}
             </a>
           `;
-          
+
           container.appendChild(card);
         });
       } catch (err) {
