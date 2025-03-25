@@ -74,7 +74,7 @@ document.getElementById('searchButton').addEventListener('click', function () {
 // Handle form submission
 document
 .getElementById("save-btn")
-.addEventListener("submit", async (event) => {
+.addEventListener("click", async (event) => {
   event.preventDefault(); // Prevent default form submission behavior
 
   try {
@@ -102,8 +102,8 @@ document
 .addEventListener("click", async () => {
   try {
     // Fetch all data from the "resources" table
-    const { data, error } = await supabase
-      .from("resources") // Replace with your table name
+    const { data} = await supabase
+      .from("resourceTable") // Replace with your table name
       .select("*"); // Retrieve all columns (use specific columns if needed)
 
     if (error) throw error;
@@ -141,7 +141,7 @@ const GET_RESOURCE_STATS = gql`
 async function fetchGraphData() {
     try {
         const { data } = await apolloClient.query({ query: GET_RESOURCE_STATS });
-        if (data) createBarGraph(data.Resource_Table, data.Request_Table);
+        if (data) createBarGraph(data.ResourceTable, data.RequestTable);
     } catch (error) {
         console.error('Error fetching GraphQL data:', error);
     }
@@ -182,7 +182,7 @@ function updateStatistics(statusCounts, resourceUsage) {
 
 // Fetch and display notifications
 async function fetchNotifications() {
-    const { data, error } = await supabase.from('Notification Table').select('*');
+    const { data} = await supabase.from('NotificationTable').select('*');
     if (error) {
         console.error('Error fetching notifications:', error);
     } else {
@@ -226,7 +226,7 @@ function addResource() {
         // Upload PDF to Supabase storage if valid
         let pdfUrl = "";
         if (pdfFile) {
-            const { data, error } = await supabase.storage.from('pdf-bucket').upload(pdfFile.name, pdfFile);
+            const { data} = await supabase.storage.from('pdf-bucket').upload(pdfFile.name, pdfFile);
             if (error) {
                 alert("Error uploading PDF: " + error.message);
                 return;
@@ -254,7 +254,7 @@ function addResource() {
 
 // Function to fetch and display resources
 async function fetchResources() {
-    let { data, error } = await supabase.from('Resource Table').select('*');
+    let { data, error } = await supabase.from('ResourceTable').select('*');
     if (error) {
         console.error('Error fetching resources:', error);
     } else {
@@ -284,11 +284,11 @@ function displayResources(resources) {
 
 // Function to delete a resource
 async function deleteResource(requestResourceID) {
-    const { error } = await supabase.from('Resource Table').delete().eq('Request Resource ID', requestResourceID);
+    const { data } = await supabase.from('ResourceTable').delete().eq('request_id', requestResourceID);
     if (error) {
         console.error('Error deleting resource:', error);
     } else {
-        fetchResources();
+        fetchResources(data);
     }
 }
 
@@ -299,7 +299,7 @@ document.querySelector("button[onclick='alert(\'Notification Button clicked!\')'
 
 // Fetch notifications
 async function fetchNotifications() {
-    const { data, error } = await supabase.from('Notification Table').select('*');
+    const { data} = await supabase.from('NotificationTable').select('*');
     if (error) {
         console.error('Error fetching notifications:', error);
     } else {
@@ -309,7 +309,7 @@ async function fetchNotifications() {
 
 // Fetch and display requests
 async function fetchRequests() {
-    let { data, error } = await supabase.from('Request Table').select('*');
+    let { data} = await supabase.from('RequestTable').select('*');
     if (error) {
         console.error('Error fetching requests:', error);
     } else {
