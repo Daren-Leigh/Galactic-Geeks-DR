@@ -103,7 +103,7 @@ document
   try {
     // Fetch all data from the "resources" table
     const { data, error } = await supabase
-      .from("resources") // Replace with your table name
+      .from("resourceTable") // Replace with your table name
       .select("*"); // Retrieve all columns (use specific columns if needed)
 
     if (error) throw error;
@@ -182,7 +182,7 @@ function updateStatistics(statusCounts, resourceUsage) {
 
 // Fetch and display notifications
 async function fetchNotifications() {
-    const { data, error } = await supabase.from('Notification Table').select('*');
+    const { data, error } = await supabase.from('NotificationTable').select('*');
     if (error) {
         console.error('Error fetching notifications:', error);
     } else {
@@ -254,7 +254,7 @@ function addResource() {
 
 // Function to fetch and display resources
 async function fetchResources() {
-    let { data, error } = await supabase.from('Resource Table').select('*');
+    let { data, error } = await supabase.from('ResourceTable').select('*');
     if (error) {
         console.error('Error fetching resources:', error);
     } else {
@@ -284,7 +284,7 @@ function displayResources(resources) {
 
 // Function to delete a resource
 async function deleteResource(requestResourceID) {
-    const { error } = await supabase.from('Resource Table').delete().eq('Request Resource ID', requestResourceID);
+    const { error } = await supabase.from('ResourceTable').delete().eq('request_id', requestResourceID);
     if (error) {
         console.error('Error deleting resource:', error);
     } else {
@@ -299,7 +299,7 @@ document.querySelector("button[onclick='alert(\'Notification Button clicked!\')'
 
 // Fetch notifications
 async function fetchNotifications() {
-    const { data, error } = await supabase.from('Notification Table').select('*');
+    const { data, error } = await supabase.from('NotificationTable').select('*');
     if (error) {
         console.error('Error fetching notifications:', error);
     } else {
@@ -309,7 +309,7 @@ async function fetchNotifications() {
 
 // Fetch and display requests
 async function fetchRequests() {
-    let { data, error } = await supabase.from('Request Table').select('*');
+    let { data, error } = await supabase.from('RequestTable').select('*');
     if (error) {
         console.error('Error fetching requests:', error);
     } else {
