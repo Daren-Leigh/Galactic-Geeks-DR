@@ -182,7 +182,7 @@ function updateStatistics(statusCounts, resourceUsage) {
 
 // Fetch and display notifications
 async function fetchNotifications() {
-    const { data, error } = await supabase.from('Notification Table').select('*');
+    const { data, error } = await supabase.from('NotificationTable').select('*');
     if (error) {
         console.error('Error fetching notifications:', error);
     } else {
@@ -254,7 +254,7 @@ function addResource() {
 
 // Function to fetch and display resources
 async function fetchResources() {
-    let { data, error } = await supabase.from('Resource Table').select('*');
+    let { data, error } = await supabase.from('ResourceTable').select('*');
     if (error) {
         console.error('Error fetching resources:', error);
     } else {
@@ -299,7 +299,7 @@ document.querySelector("button[onclick='alert(\'Notification Button clicked!\')'
 
 // Fetch notifications
 async function fetchNotifications() {
-    const { data, error } = await supabase.from('Notification Table').select('*');
+    const { data, error } = await supabase.from('NotificationTable').select('*');
     if (error) {
         console.error('Error fetching notifications:', error);
     } else {
