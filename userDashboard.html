@@ -69,72 +69,86 @@
     <div class="userDashboardContent" id="resourceContainer">Loading resources...</div>
   </div>
   <div class="footer">Footer</div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
-   const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMDI5MjQsImV4cCI6MjA1Nzc3ODkyNH0.qD8cyG3ZxAieUdFU05NOI661JGTv7lA5NIyoTTJCL6k'; // 🔹 Client API Key (For Frontend)
-    const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjIwMjkyNCwiZXhwIjoyMDU3Nzc4OTI0fQ.XgpwK52aXIJNZtHUDgSfD1ThR186gNF7K_NQ0kobsuM'; // 🔹 Service Key (Only for Backend)
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co'; 
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMDI5MjQsImV4cCI6MjA1Nzc3ODkyNH0.qD8cyG3ZxAieUdFU05NOI661JGTv7lA5NIyoTTJCL6k'; // Update with your Supabase key
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function fetchResources() {
       const container = document.getElementById('resourceContainer');
       container.innerHTML = '<p>Loading resources...</p>';
 
       try {
-        // 🔹 Fetch all available resources
-        const { data: resources, error: resourceError } = await supabase
-          .from('ResourceTable')
-          .select('ResourceID, ResourceName, ResourceLink');
+        // Step 1: Get the logged-in user's email from Supabase Auth
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-        if (resourceError) throw resourceError;
+        if (authError || !user || !user.email) {
+          throw new Error("User not authenticated or email not found");
+        }
 
-        // 🔹 Fetch the logged-in user's ID
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) throw new Error('User not authenticated');
+        const userEmail = user.email.trim(); // Ensure no spaces
+        console.log("Logged-in User Email:", userEmail);
 
-        const userId = user.id; // Assuming UserID is stored as a UUID
+        // Step 2: Find the corresponding UserID (UUID) from UserTable
+        const { data: userRecord, error: userError } = await supabase
+          .from('UserTable')
+          .select('"userid"') // Fetch UUID UserID with case-sensitive column name
+          .eq('email', userEmail) // Case-insensitive email comparison
+          .single();
 
-        // 🔹 Get resources allocated to this user
+        if (userError || !userRecord) {
+          throw new Error("User not found in UserTable");
+        }
+
+        const loggedInUserID = userRecord.userid; // UUID UserID
+        console.log("Mapped UUID UserID:", loggedInUserID);
+
+        // Step 3: Fetch allocated resources using UUID UserID
         const { data: allocatedResources, error: allocationError } = await supabase
           .from('AllocationTable')
-          .select('ResourceID')
-          .eq('UserID', userId);
+          .select('"resourceid"') // Fetch UUID ResourceID with case-sensitive column name
+          .eq('"userid"', loggedInUserID); // Case-sensitive column name for 'userid'
 
-        if (allocationError) throw allocationError;
-
-        // 🔹 Convert allocated resources to a set for quick lookup
-        const allocatedResourceIds = new Set(allocatedResources.map(r => r.ResourceID));
-
-        container.innerHTML = '';
-
-        if (!resources || resources.length === 0) {
-          container.innerHTML = '<p>No resources found.</p>';
-          return;
+        if (allocationError) {
+          throw new Error("Error fetching allocated resources: " + allocationError.message);
         }
+
+        // Step 4: Fetch all available resources
+        const { data: resources, error: resourceError } = await supabase
+          .from('ResourceTable')
+          .select('"resourceid", "ResourceName", "ResourceLink"'); // Correct case-sensitive columns
+
+        if (resourceError) {
+          throw new Error("Error fetching resources: " + resourceError.message);
+        }
+
+        // Step 5: Process and Display Resources
+        container.innerHTML = '';
+        const allocatedResourceIDs = new Set(allocatedResources.map(r => r.resourceid)); // Set of allocated ResourceIDs
 
         resources.forEach(resource => {
           const card = document.createElement('div');
           card.classList.add('resource-card');
 
-          // 🔹 Check if the user has access to the resource
-          const isAllocated = allocatedResourceIds.has(resource.ResourceID);
+          let buttonHTML = `<button class="request-btn">Request</button>`; // Default button for unallocated resources
+
+          // If the resource is allocated to the logged-in user, change the button to "Download"
+          if (allocatedResourceIDs.has(resource.resourceid)) {
+            buttonHTML = `<a href="${resource.ResourceLink}" target="_blank" class="download-btn">Download</a>`;
+          }
 
           card.innerHTML = `
             <h3>${resource.ResourceName}</h3>
-            <a href="${isAllocated ? resource.ResourceLink : '#'}"
-               target="${isAllocated ? '_blank' : '_self'}"
-               class="resource-btn"
-               data-id="${resource.ResourceID}">
-              ${isAllocated ? 'Download' : 'Request'}
-            </a>
+            ${buttonHTML}
           `;
 
           container.appendChild(card);
         });
+
       } catch (err) {
         console.error('Error loading resources:', err.message);
-        container.innerHTML = '<p>Error loading resources.</p>';
+        container.innerHTML = `<p>Error loading resources: ${err.message}</p>`;
       }
     }
 
