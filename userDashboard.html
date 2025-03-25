@@ -55,18 +55,19 @@
       transform: scale(1.05);
     }
 
-    .resource-card a {
+    .resource-card button {
       display: block;
       margin-top: 10px;
       padding: 8px;
       background: white;
       color: #F3752B;
-      text-decoration: none;
+      border: none;
       border-radius: 5px;
       font-weight: bold;
+      cursor: pointer;
     }
 
-    .resource-card a:hover {
+    .resource-card button:hover {
       background: #ddd;
     }
 
@@ -99,12 +100,11 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <script>
-    // Supabase Initialization with Your Keys
+    // Initialize Supabase client
     const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMDI5MjQsImV4cCI6MjA1Nzc3ODkyNH0.qD8cyG3ZxAieUdFU05NOI661JGTv7lA5NIyoTTJCL6k'; // 🔹 Client API Key (For Frontend)
     const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjIwMjkyNCwiZXhwIjoyMDU3Nzc4OTI0fQ.XgpwK52aXIJNZtHUDgSfD1ThR186gNF7K_NQ0kobsuM'; // 🔹 Service Key (Only for Backend)
 
-    // Creating Supabase Client
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function fetchResources() {
@@ -112,13 +112,31 @@
       container.innerHTML = '<p>Loading resources...</p>';
 
       try {
-        const { data: resources, error } = await supabase
-          .from('ResourceTable')  // Make sure this matches your actual table name
-          .select('ResourceName, ResourceLink');
-
-        if (error) {
-          throw error;
+        // Get logged-in user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          container.innerHTML = '<p>Please log in to view resources.</p>';
+          return;
         }
+
+        const userId = user.id;
+
+        // Fetch allocated resources for user
+        const { data: allocatedResources, error: allocError } = await supabase
+          .from('AllocatedResource')
+          .select('ResourceID')
+          .eq('UserID', userId);
+
+        if (allocError) throw allocError;
+
+        const allocatedResourceIds = allocatedResources.map(r => r.ResourceID);
+
+        // Fetch all resources
+        const { data: resources, error } = await supabase
+          .from('ResourceTable')
+          .select('ResourceID, ResourceName, ResourceLink');
+
+        if (error) throw error;
 
         container.innerHTML = '';
 
@@ -127,13 +145,19 @@
           return;
         }
 
+        // Display resources
         resources.forEach(resource => {
           const card = document.createElement('div');
           card.classList.add('resource-card');
 
+          const buttonText = allocatedResourceIds.includes(resource.ResourceID) ? 'Download' : 'Request';
+          const buttonAction = allocatedResourceIds.includes(resource.ResourceID) ?
+            `window.open('${resource.ResourceLink}', '_blank')` :
+            'alert("Request functionality coming soon.")';
+
           card.innerHTML = `
             <h3>${resource.ResourceName}</h3>
-            <a href="${resource.ResourceLink}" target="_blank">Visit Resource</a>
+            <button onclick="${buttonAction}">${buttonText}</button>
           `;
 
           container.appendChild(card);
@@ -145,9 +169,7 @@
       }
     }
 
-    // Ensure fetching occurs after page load
     window.onload = fetchResources;
   </script>
-
 </body>
 </html>
