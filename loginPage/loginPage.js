@@ -23,7 +23,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (error) {
             showMessage("Login failed: " + error.message, "error");
         } else {
-            fetchUserRole(data.user.id);
+            // Skip role fetching and directly redirect
+            window.location.href = "https://studylocker-gg.netlify.app/userDashboard"; // Or whatever page
         }
     }
 
@@ -41,17 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (error) {
             showMessage("OTP verification failed: " + error.message, "error");
         } else {
-            fetchUserRole(data.user.id);
-        }
-    }
-
-    // ✅ Fetch User Role
-    async function fetchUserRole(userId) {
-        const { data, error } = await supabase.from("users").select("role").eq("id", userId).single();
-        if (error) {
-            showMessage("Error fetching role: " + error.message, "error");
-        } else {
-            window.location.href = data.role === "admin" ? "admin-dashboard.html" : "user-dashboard.html";
+            // Skip role fetching and directly redirect
+            window.location.href = "user-dashboard.html"; // Or whatever page
         }
     }
 
