@@ -4,24 +4,75 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard</title>
-  <link rel="icon" href="data:;base64,="> <!-- No favicon -->
   <style>
-    /* Your styles here */
+    body {
+      background-color: #574B60;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    .navbar, .footer {
+      width: 100%;
+      height: 60px;
+      background-color: #F3752B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .userDashboardContainer {
+      display: flex;
+      justify-content: center;
+      align-content: center;
+    }
+    .userDashboardContent {
+      width: 80%;
+      min-height: 50vh;
+      padding: 2vh;
+      background-color: #574B60;
+      border: 3px solid white;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .resource-card {
+      background-color: #F3752B;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      width: 250px;
+      text-align: center;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease-in-out;
+    }
+    .resource-card:hover {
+      transform: scale(1.05);
+    }
+    .resource-card a {
+      display: block;
+      margin-top: 10px;
+      padding: 8px;
+      background: white;
+      color: #F3752B;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .resource-card a:hover {
+      background: #ddd;
+    }
   </style>
 </head>
 <body>
   <div class="navbar">Dashboard</div>
-  <div class="userDashboardContainer">
   <div class="userDashboardContainer">
     <div class="userDashboardContent" id="resourceContainer">Loading resources...</div>
   </div>
   <div class="footer">Footer</div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
-    const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMDI5MjQsImV4cCI6MjA1Nzc3ODkyNH0.qD8cyG3ZxAieUdFU05NOI661JGTv7lA5NIyoTTJCL6k'; // 🔹 Client API Key (For Frontend)
-    const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjIwMjkyNCwiZXhwIjoyMDU3Nzc4OTI0fQ.XgpwK52aXIJNZtHUDgSfD1ThR186gNF7K_NQ0kobsuM'; // 🔹 Service Key (Only for Backend)
-
+    const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co'; 
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMDI5MjQsImV4cCI6MjA1Nzc3ODkyNH0.qD8cyG3ZxAieUdFU05NOI661JGTv7lA5NIyoTTJCL6k'; // Update with your Supabase key
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function fetchResources() {
@@ -42,8 +93,8 @@
         // Step 2: Find the corresponding UserID (UUID) from UserTable
         const { data: userRecord, error: userError } = await supabase
           .from('UserTable')
-          .select('userid') // Fetch UUID UserID
-          .eq('Email', userEmail)
+          .select('"userid"') // Fetch UUID UserID with case-sensitive column name
+          .eq('email', userEmail) // Case-insensitive email comparison
           .single();
 
         if (userError || !userRecord) {
@@ -56,8 +107,8 @@
         // Step 3: Fetch allocated resources using UUID UserID
         const { data: allocatedResources, error: allocationError } = await supabase
           .from('AllocationTable')
-          .select('resourceid') // Fetch UUID ResourceID
-          .eq('userid', loggedInUserID); // UUID UserID
+          .select('"resourceid"') // Fetch UUID ResourceID with case-sensitive column name
+          .eq('"userid"', loggedInUserID); // Case-sensitive column name for 'userid'
 
         if (allocationError) {
           throw new Error("Error fetching allocated resources: " + allocationError.message);
@@ -66,7 +117,7 @@
         // Step 4: Fetch all available resources
         const { data: resources, error: resourceError } = await supabase
           .from('ResourceTable')
-          .select('resourceid, resourceName, resourceLink'); // Fetch resource data
+          .select('"resourceid", "ResourceName", "ResourceLink"'); // Correct case-sensitive columns
 
         if (resourceError) {
           throw new Error("Error fetching resources: " + resourceError.message);
@@ -84,14 +135,13 @@
 
           // If the resource is allocated to the logged-in user, change the button to "Download"
           if (allocatedResourceIDs.has(resource.resourceid)) {
-            buttonHTML = `<a href="${resource.resourcelink}" target="_blank" class="download-btn">Download</a>`;
+            buttonHTML = `<a href="${resource.ResourceLink}" target="_blank" class="download-btn">Download</a>`;
           }
 
           card.innerHTML = `
-            <h3>${resource.resourcename}</h3>
+            <h3>${resource.ResourceName}</h3>
             ${buttonHTML}
           `;
-
 
           container.appendChild(card);
         });
