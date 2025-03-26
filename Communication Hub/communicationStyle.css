@@ -1,0 +1,147 @@
+/* Global Styling */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #F8F8F8;
+}
+
+/* Navbar & Footer */
+.navbar, .footer {
+    width: 100%;
+    height: 60px;
+    background-color: #F3752B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 20px;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.footer {
+    bottom: 0;
+    top: auto;
+}
+
+/* Communication Hub (Forum Page) */
+#forum-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 100px 20px 40px;
+    justify-content: center;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Forum Cards */
+.forum-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    text-align: center;
+}
+
+.forum-card:hover {
+    transform: scale(1.05);
+    box-shadow: 4px 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.forum-card h2 {
+    color: #F3752B;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+/* Chatroom Page */
+#chatroom-container {
+    padding: 80px 20px;
+    max-width: 800px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Chat Window */
+#chat-messages {
+    width: 100%;
+    max-height: 500px;
+    overflow-y: auto;
+    background: #1F1F1F;
+    color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Message Bubbles */
+.user-message, .admin-message {
+    padding: 10px 15px;
+    margin: 10px;
+    border-radius: 20px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+/* User Messages */
+.user-message {
+    background-color: #F3752B;
+    color: white;
+    align-self: flex-end;
+}
+
+/* Admin Messages */
+.admin-message {
+    background-color: #8f8f8f;
+    color: #FFD700;
+    align-self: flex-start;
+}
+
+/* Message Input */
+#message-input {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #F3752B;
+    border-radius: 20px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background: #F3752B;
+    color: white;
+    border: none;
+    font-size: 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #D9611F;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #forum-list {
+        grid-template-columns: 1fr;
+    }
+
+    #chat-messages {
+        max-height: 400px;
+    }
+
+    .user-message, .admin-message {
+        max-width: 90%;
+    }
+}
