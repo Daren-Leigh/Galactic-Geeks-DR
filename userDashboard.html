@@ -85,9 +85,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <script>
- // Supabase setup
+// Supabase setup
 const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjIwMjkyNCwiZXhwIjoyMDU3Nzc4OTI0fQ.XgpwK52aXIJNZtHUDgSfD1ThR186gNF7K_NQ0kobsuM';
+const SUPABASE_KEY = 'YOUR_SUPABASE_KEY_HERE';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Function to fetch user ID from UserTable
@@ -135,44 +135,35 @@ async function fetchResources() {
         
         if (allocationError) throw new Error("Error fetching allocated resources: " + allocationError.message);
         
-        if (!allocatedResources || allocatedResources.length === 0) {
-            container.innerHTML = '<p>No allocated resources found.</p>';
-            return;
-        }
-        
         // Extract resource IDs from allocated resources
-        const allocatedResourceIDs = allocatedResources.map(r => r.resourceid);
+        const allocatedResourceIDs = new Set(allocatedResources.map(r => r.resourceid));
         
-        // Step 3: Fetch only allocated resources from ResourceTable
-        const { data: resources, error: resourceError } = await supabase
-    .from('ResourceTable')
-    .select('resourceid, "ResourceName", "ResourceLink"') // Ensure correct column names
-    .in('resourceid', allocatedResourceIDs);
-
-if (resourceError) throw new Error("Error fetching resources: " + resourceError.message);
-
-console.log("Fetched Resources:", resources); // Debugging
-
-container.innerHTML = '';
-resources.forEach(resource => {
-    const card = document.createElement('div');
-    card.classList.add('resource-card');
-
-    // Ensure title and link are properly set
-    const resourceTitle = resource.ResourceName || 'Unnamed Resource';
-    const resourceLink = resource.ResourceLink
-        ? `<a href="${resource.ResourceLink}" target="_blank" class="download-btn">Download</a>`
-        : `<p style="color: red;">No link available</p>`;
-
-    card.innerHTML = `<h3>${resourceTitle}</h3>${resourceLink}`;
-    container.appendChild(card);
-});
+        // Step 3: Fetch all resources from ResourceTable
+        const { data: allResources, error: resourceError } = await supabase
+            .from('ResourceTable')
+            .select('resourceid, resourceName, resourceLink');
+        
+        if (resourceError) throw new Error("Error fetching resources: " + resourceError.message);
+        
+        // Step 4: Display all resources
+        container.innerHTML = '';
+        allResources.forEach(resource => {
+            const card = document.createElement('div');
+            card.classList.add('resource-card');
+            
+            let buttonHTML = `<button class='request-btn'>Request</button>`; // Default to Request
+            if (allocatedResourceIDs.has(resource.resourceid)) {
+                buttonHTML = `<a href='${resource.resourceLink}' target='_blank' class='download-btn'>Download</a>`;
+            }
+            
+            card.innerHTML = `<h3>${resource.resourceName}</h3>${buttonHTML}`;
+            container.appendChild(card);
+        });
     } catch (err) {
         console.error('Error loading resources:', err.message);
         container.innerHTML = `<p>Error loading resources: ${err.message}</p>`;
     }
 }
-
 // Run on page load
 window.onload = fetchResources;
 
