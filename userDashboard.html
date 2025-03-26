@@ -153,10 +153,10 @@ async function fetchResources() {
             
             let buttonHTML = `<button class='request-btn'>Request</button>`; // Default to Request
             if (allocatedResourceIDs.has(resource.resourceid)) {
-                buttonHTML = `<a href='${resource.resourceLink}' target='_blank' class='download-btn'>Download</a>`;
+                buttonHTML = `<a href='${resource.ResourceLink}' target='_blank' class='download-btn'>Download</a>`;
             }
             
-            card.innerHTML = `<h3>${resource.resourceName}</h3>${buttonHTML}`;
+            card.innerHTML = `<h3>${resource.ResourceName}</h3>${buttonHTML}`;
             container.appendChild(card);
         });
     } catch (err) {
