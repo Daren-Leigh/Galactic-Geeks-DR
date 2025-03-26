@@ -15,6 +15,8 @@ const apolloClient = new ApolloClient({
     headers: { Authorization: `Bearer ${SUPABASE_KEY}` },
 });
 
+
+
 const historyData = {
     deletedResources: [],
     savedResources: []
@@ -132,8 +134,8 @@ document
 // GraphQL query to fetch resource usage and request statistics
 const GET_RESOURCE_STATS = gql`
     query GetResourceStats {
-        Resource_Table { Resource_Name Usage_Count }
-        Request_Table { Status }
+        ResourceTable { Resource_Name Usage_Count }
+        RequestTable { Status }
     }
 `;
 
