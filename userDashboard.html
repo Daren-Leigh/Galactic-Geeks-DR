@@ -102,7 +102,7 @@ async function getUserID() {
         
         // Step 2: Fetch user ID using email
         const { data: userData, error: userError } = await supabase
-            .from('public.UserTable')
+            .from('UserTable')
             .select('userid')
             .eq('Email', userEmail) // Match case-sensitive column name
             .single(); // Expect a single record
@@ -129,7 +129,7 @@ async function fetchResources() {
         
         // Step 2: Fetch allocated resources for the user first
         const { data: allocatedResources, error: allocationError } = await supabase
-            .from('public.AllocationTable')
+            .from('AllocationTable')
             .select('resourceid')
             .eq('userid', userID);
         
@@ -145,7 +145,7 @@ async function fetchResources() {
         
         // Step 3: Fetch only allocated resources from ResourceTable
         const { data: resources, error: resourceError } = await supabase
-            .from('public.ResourceTable')
+            .from('ResourceTable')
             .select('resourceid, resourceName, resourceLink')
             .in('resourceid', allocatedResourceIDs);
         
