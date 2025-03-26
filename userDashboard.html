@@ -145,23 +145,28 @@ async function fetchResources() {
         
         // Step 3: Fetch only allocated resources from ResourceTable
         const { data: resources, error: resourceError } = await supabase
-            .from('ResourceTable')
-            .select('resourceid, ResourceName, ResourceLink')
-            .in('resourceid', allocatedResourceIDs);
-        
-        if (resourceError) throw new Error("Error fetching resources: " + resourceError.message);
-        
-        // Step 4: Display allocated resources
-        container.innerHTML = '';
-        resources.forEach(resource => {
-            const card = document.createElement('div');
-            card.classList.add('resource-card');
-            
-            const buttonHTML = `<a href='${resource.resourceLink}' target='_blank' class='download-btn'>Download</a>`;
-            
-            card.innerHTML = `<h3>${resource.resourceName}</h3>${buttonHTML}`;
-            container.appendChild(card);
-        });
+    .from('ResourceTable')
+    .select('resourceid, "ResourceName", "ResourceLink"') // Ensure correct column names
+    .in('resourceid', allocatedResourceIDs);
+
+if (resourceError) throw new Error("Error fetching resources: " + resourceError.message);
+
+console.log("Fetched Resources:", resources); // Debugging
+
+container.innerHTML = '';
+resources.forEach(resource => {
+    const card = document.createElement('div');
+    card.classList.add('resource-card');
+
+    // Ensure title and link are properly set
+    const resourceTitle = resource.ResourceName || 'Unnamed Resource';
+    const resourceLink = resource.ResourceLink
+        ? `<a href="${resource.ResourceLink}" target="_blank" class="download-btn">Download</a>`
+        : `<p style="color: red;">No link available</p>`;
+
+    card.innerHTML = `<h3>${resourceTitle}</h3>${resourceLink}`;
+    container.appendChild(card);
+});
     } catch (err) {
         console.error('Error loading resources:', err.message);
         container.innerHTML = `<p>Error loading resources: ${err.message}</p>`;
