@@ -141,8 +141,7 @@ async function fetchResources() {
         // Step 3: Fetch all resources from ResourceTable
         const { data: allResources, error: resourceError } = await supabase
             .from('ResourceTable')
-            .select('resourceid, ResourceName, ResourceLink')
-            .in('resourceid', allocatedResourceIDs);
+            .select('resourceid, ResourceName, ResourceLink');
         
         if (resourceError) throw new Error("Error fetching resources: " + resourceError.message);
         
