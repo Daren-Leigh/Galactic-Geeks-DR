@@ -20,27 +20,28 @@ async function loginUser() {
 
     if (error) {
         showMessage("Login failed: " + error.message, "error");
+        return;
+    }
+
+    console.log("User logged in successfully:", data);
+    console.log("User token:", data.session.access_token);
+
+    // ✅ Get user ID from Supabase
+    const userId = data.user.id;
+
+    // ✅ Check if the user exists in the `admins` table
+    const { data: adminData, error: adminError } = await supabase
+        .from("admins")  // Replace with your actual admin table name
+        .select("id")
+        .eq("id", userId)
+        .single();
+
+    if (adminData) {
+        console.log("Admin detected, redirecting...");
+        window.location.href = "https://studylocker-gg.netlify.app/adminDashboard";
     } else {
-        console.log("User logged in successfully:", data);
-        console.log("User token:", data.session.access_token);
-
-        // ✅ Get user ID from Supabase
-        const userId = data.user.id;
-
-        // ✅ Check if the user exists in the `admins` table
-        const { data: adminData, error: adminError } = await supabase
-            .from("admins")  // Replace with your actual admin table name
-            .select("id")
-            .eq("id", userId)
-            .single();
-
-        if (adminData) {
-            console.log("Admin detected, redirecting...");
-            window.location.href = "https://studylocker-gg.netlify.app/adminDashboard";
-        } else {
-            console.log("Regular user detected, redirecting...");
-            window.location.href = "https://studylocker-gg.netlify.app/userDashboard";
-        }
+        console.log("Regular user detected, redirecting...");
+        window.location.href = "https://studylocker-gg.netlify.app/userDashboard";
     }
 }
 
@@ -52,7 +53,11 @@ async function forgotPassword() {
         return;
     }
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    console.log("Sending password reset email to:", email);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: "https://studylocker-gg.netlify.app/resetPasswordPage.html"
+    });
 
     if (error) {
         showMessage("Error sending reset email: " + error.message, "error");
@@ -72,6 +77,8 @@ function showMessage(msg, type) {
     }, 4000);
 }
 
-// ✅ Attach event listeners after DOM is loaded
-document.getElementById("login-btn").addEventListener("click", loginUser);
-document.getElementById("forgot-password-btn").addEventListener("click", forgotPassword);
+// ✅ Attach event listeners *after* the DOM has loaded
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("login-btn").addEventListener("click", loginUser);
+    document.getElementById("forgot-password-btn").addEventListener("click", forgotPassword);
+});
