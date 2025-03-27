@@ -16,14 +16,14 @@ async function loginUser() {
         return;
     }
 
-    console.log("Email:", email);  // Debugging email
-    console.log("Password:", password);  // Debugging password
+    console.log("Email:", email);
+    console.log("Password:", password);
 
-    // Using signInWithPassword method instead of signIn
+    // ✅ Sign in user
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-        console.error("Login error:", error);  // Debugging the error
+        console.error("Login error:", error);
         showMessage("Login failed: " + error.message, "error");
         return;
     }
@@ -34,12 +34,16 @@ async function loginUser() {
     // ✅ Get user ID from Supabase
     const userId = data.user.id;
 
-    // ✅ Check if the user exists in the admins table
+    // ✅ Check if the user exists in AdminTable
     const { data: adminData, error: adminError } = await supabase
-        .from("AdminTable")  // Make sure this table name is correct
-        .select("AdminID")    // Use AdminID to identify admins
-        .eq("Email", email)   // Query the table using the email as a unique identifier
+        .from("AdminTable")
+        .select("AdminID")
+        .eq("Email", email)
         .single();
+
+    if (adminError) {
+        console.error("Admin check error:", adminError);
+    }
 
     if (adminData) {
         console.log("Admin detected, redirecting...");
@@ -65,9 +69,11 @@ async function forgotPassword() {
     });
 
     if (error) {
+        console.error("Error sending reset email:", error);
         showMessage("Error sending reset email: " + error.message, "error");
     } else {
-        console.log("Password reset email sent to:", email);
+        console.log("Password reset email sent successfully!");
+        showMessage("Password reset email sent successfully! Please check your inbox.", "success");
     }
 }
 
@@ -82,7 +88,7 @@ function showMessage(msg, type) {
     }, 4000);
 }
 
-// ✅ Attach event listeners *after* the DOM has loaded
+// ✅ Attach event listeners after the DOM has loaded
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("login-btn").addEventListener("click", loginUser);
     document.getElementById("forgot-password-btn").addEventListener("click", forgotPassword);
