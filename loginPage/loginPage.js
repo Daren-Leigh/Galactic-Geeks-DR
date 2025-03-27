@@ -68,7 +68,24 @@ async function forgotPassword() {
     if (error) {
         showMessage("Error sending reset email: " + error.message, "error");
     } else {
-        showMessage("Password reset email sent successfully. Please check your inbox.", "success");
+        console.log("OTP verified successfully:", data);
+
+        const userId = data.user.id;
+
+        // ✅ Check if user exists in `admins` table
+        const { data: adminData, error: adminError } = await supabase
+            .from("admins")  
+            .select("id")
+            .eq("id", userId)
+            .single();
+
+        if (adminData) {
+            console.log("Admin detected, redirecting...");
+            window.location.href = "https://studylocker-gg.netlify.app/adminDashboard";
+        } else {
+            console.log("Regular user detected, redirecting...");
+            window.location.href = "https://studylocker-gg.netlify.app/userDashboard";
+        }
     }
 }
 
