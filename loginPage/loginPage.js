@@ -56,7 +56,7 @@ async function forgotPassword() {
     console.log("Sending password reset email to:", email);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://studylocker-gg.netlify.app/Reset Password/resetPasswordPage.html"
+        redirectTo: "https://studylocker-gg.netlify.app/ResetPassword/resetPassword.html"
     });
 
     if (error) {
