@@ -10,7 +10,7 @@
       color: white;
       font-family: Arial, sans-serif;
     }
-    .footer { /* For the pull */
+    .footer {
       width: 100%;
       height: 60px;
       background-color: #F3752B;
@@ -20,35 +20,30 @@
       font-weight: bold;
     }
     .navbar {
-  width: 100%;
-  height: 60px;
-  background-color: #F3752B;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end; /* Align items to the right */
-  padding-right: 20px; /* Add some space from the right edge */
-  gap: 20px; /* Even spacing between items */
-}
-
-.navbar a {
-  color: white; /* Ensures text color remains white */
-  text-decoration: none; /* Removes underline */
-  font-weight: bold;
-  padding: 10px 15px; /* Adds padding for better clickability */
-  border-radius: 5px;
-  transition: background 0.3s ease-in-out;
-}
-
-.navbar a:hover {
-  background: rgba(255, 255, 255, 0.2); /* Adds a hover effect */
-}
-
-/* Removes blue highlight on click */
-.navbar a:focus,
-.navbar a:active {
-  outline: none;
-  box-shadow: none;
-}
+      width: 100%;
+      height: 60px;
+      background-color: #F3752B;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 20px;
+      gap: 20px;
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: background 0.3s ease-in-out;
+    }
+    .navbar a:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .navbar a:focus, .navbar a:active {
+      outline: none;
+      box-shadow: none;
+    }
     .userDashboardContainer {
       display: flex;
       justify-content: center;
@@ -77,7 +72,7 @@
     .resource-card:hover {
       transform: scale(1.05);
     }
-    .resource-card button {
+    .request-btn {
       margin-top: 10px;
       padding: 8px;
       background: white;
@@ -87,10 +82,14 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .resource-card button:hover {
+    .request-btn:hover {
       background: #ddd;
     }
-    .resource-card a {
+    .request-btn:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+    .download-btn {
       display: block;
       margin-top: 10px;
       padding: 8px;
@@ -100,105 +99,135 @@
       border-radius: 5px;
       font-weight: bold;
     }
-    .resource-card a:hover {
+    .download-btn:hover {
       background: #ddd;
     }
   </style>
 </head>
 <body>
   <div class="navbar">
-  <a href="userProfile.html">Profile</a>
-  <a href="index.html">Logout</a>
+    <a href="userProfile.html">Profile</a>
+    <a href="index.html">Logout</a>
   </div>
+
   <div class="userDashboardContainer">
     <div class="userDashboardContent" id="resourceContainer">Loading resources...</div>
   </div>
+
   <div class="footer"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
   <script>
-// Supabase setup
-const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjIwMjkyNCwiZXhwIjoyMDU3Nzc4OTI0fQ.XgpwK52aXIJNZtHUDgSfD1ThR186gNF7K_NQ0kobsuM';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjIwMjkyNCwiZXhwIjoyMDU3Nzc4OTI0fQ.XgpwK52aXIJNZtHUDgSfD1ThR186gNF7K_NQ0kobsuM';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Function to fetch user ID from UserTable
-async function getUserID() {
-    try {
-        // Step 1: Get logged-in user's session
-        const { data: { session }, error: authError } = await supabase.auth.getSession();
-        if (authError || !session || !session.user) throw new Error("User not authenticated");
-        
-        const userEmail = session.user.email; // Get user's email
-        console.log("User Email:", userEmail);
-        
-        // Step 2: Fetch user ID using email
-        const { data: userData, error: userError } = await supabase
-            .from('UserTable')
-            .select('userid')
-            .eq('Email', userEmail) // Match case-sensitive column name
-            .single(); // Expect a single record
-        
-        if (userError || !userData) throw new Error("User not found in UserTable");
-        
-        console.log("Fetched UserID:", userData.userid);
-        return userData.userid;
-    } catch (err) {
-        console.error('Error fetching user ID:', err.message);
+    async function getUserID() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session || !session.user) throw new Error("User not authenticated");
+
+        const userEmail = session.user.email;
+        const { data: userData } = await supabase
+          .from('UserTable')
+          .select('userid')
+          .eq('Email', userEmail)
+          .single();
+
+        return userData ? userData.userid : null;
+      } catch (err) {
+        console.error("Error fetching user ID:", err.message);
         return null;
+      }
     }
-}
 
-// Function to fetch and display resources
-async function fetchResources() {
-    const container = document.getElementById('resourceContainer');
-    container.innerHTML = '<p>Loading resources...</p>';
-    
-    try {
-        // Step 1: Get the logged-in user ID
+    async function requestResource(resourceID, button) {
+      try {
         const userID = await getUserID();
-        if (!userID) throw new Error("User ID could not be retrieved");
-        
-        // Step 2: Fetch allocated resources for the user first
-        const { data: allocatedResources, error: allocationError } = await supabase
-            .from('AllocationTable')
-            .select('resourceid')
-            .eq('userid', userID);
-        
-        if (allocationError) throw new Error("Error fetching allocated resources: " + allocationError.message);
-        
-        // Extract resource IDs from allocated resources
-        const allocatedResourceIDs = new Set(allocatedResources.map(r => r.resourceid));
-        
-        // Step 3: Fetch all resources from ResourceTable
-        const { data: allResources, error: resourceError } = await supabase
-            .from('ResourceTable')
-            .select('resourceid, ResourceName, ResourceLink');
-        
-        if (resourceError) throw new Error("Error fetching resources: " + resourceError.message);
-        
-        // Step 4: Display all resources
-        container.innerHTML = '';
-        allResources.forEach(resource => {
-            const card = document.createElement('div');
-            card.classList.add('resource-card');
-            
-            let buttonHTML = `<button class='request-btn'>Request</button>`; // Default to Request
-            if (allocatedResourceIDs.has(resource.resourceid)) {
-                buttonHTML = `<a href='${resource.ResourceLink}' target='_blank' class='download-btn'>Download</a>`;
-            }
-            
-            card.innerHTML = `<h3>${resource.ResourceName}</h3>${buttonHTML}`;
-            container.appendChild(card);
-        });
-    } catch (err) {
-        console.error('Error loading resources:', err.message);
-        container.innerHTML = `<p>Error loading resources: ${err.message}</p>`;
-    }
-}
-// Run on page load
-window.onload = fetchResources;
+        if (!userID) throw new Error("User not authenticated");
 
+        // Check if the request already exists
+        const { data: existingRequest } = await supabase
+          .from('RequestTable')
+          .select('requestid')
+          .eq('userid', userID)
+          .eq('resourceid', resourceID)
+          .single();
+
+        if (existingRequest) {
+          alert("You have already requested this resource.");
+          return;
+        }
+
+        // Insert new request
+        const { error: insertError } = await supabase
+          .from('RequestTable')
+          .insert([{ userid: userID, resourceid: resourceID }]);
+
+        if (insertError) throw insertError;
+
+        // Disable button and change text after request
+        button.textContent = "Requested";
+        button.disabled = true;
+        alert("Request submitted successfully!");
+      } catch (err) {
+        console.error("Error submitting request:", err.message);
+        alert("An error occurred. Please try again.");
+      }
+    }
+
+    async function fetchResources() {
+      const container = document.getElementById('resourceContainer');
+      container.innerHTML = '<p>Loading resources...</p>';
+
+      try {
+        const userID = await getUserID();
+        if (!userID) throw new Error("User ID not found");
+
+        // Fetch allocated resources for the user
+        const { data: allocatedResources } = await supabase
+          .from('AllocationTable')
+          .select('resourceid')
+          .eq('userid', userID);
+
+        const allocatedResourceIDs = new Set(allocatedResources.map(r => r.resourceid));
+
+        // Fetch all resources
+        const { data: allResources } = await supabase
+          .from('ResourceTable')
+          .select('resourceid, ResourceName, ResourceLink');
+
+        // Fetch already requested resources
+        const { data: requestedResources } = await supabase
+          .from('RequestTable')
+          .select('resourceid')
+          .eq('userid', userID);
+
+        const requestedResourceIDs = new Set(requestedResources.map(r => r.resourceid));
+
+        container.innerHTML = '';
+
+        allResources.forEach(resource => {
+          const card = document.createElement('div');
+          card.classList.add('resource-card');
+
+          let buttonHTML = `<button class="request-btn" onclick="requestResource('${resource.resourceid}', this)">Request</button>`;
+          if (allocatedResourceIDs.has(resource.resourceid)) {
+            buttonHTML = `<a href="${resource.ResourceLink}" target="_blank" class="download-btn">Download</a>`;
+          } else if (requestedResourceIDs.has(resource.resourceid)) {
+            buttonHTML = `<button class="request-btn" disabled>Requested</button>`;
+          }
+
+          card.innerHTML = `<h3>${resource.ResourceName}</h3>${buttonHTML}`;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error("Error loading resources:", err.message);
+        container.innerHTML = `<p>Error loading resources: ${err.message}</p>`;
+      }
+    }
+
+    window.onload = fetchResources;
   </script>
 </body>
 </html>
