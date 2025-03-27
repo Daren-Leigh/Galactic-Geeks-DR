@@ -34,11 +34,11 @@ async function loginUser() {
     // ✅ Get user ID from Supabase
     const userId = data.user.id;
 
-    // ✅ Check if the user exists in the `admins` table
+    // ✅ Check if the user exists in the admins table
     const { data: adminData, error: adminError } = await supabase
-        .from("admins")  // Replace with your actual admin table name
-        .select("id")
-        .eq("id", userId)
+        .from("AdminTable")  // Make sure this table name is correct
+        .select("AdminID")    // Use AdminID to identify admins
+        .eq("Email", email)   // Query the table using the email as a unique identifier
         .single();
 
     if (adminData) {
@@ -49,7 +49,6 @@ async function loginUser() {
         window.location.href = "https://studylocker-gg.netlify.app/userDashboard";
     }
 }
-
 
 async function forgotPassword() {
     const email = document.getElementById("forgot-password-email").value.trim();
@@ -68,24 +67,7 @@ async function forgotPassword() {
     if (error) {
         showMessage("Error sending reset email: " + error.message, "error");
     } else {
-        console.log("OTP verified successfully:", data);
-
-        const userId = data.user.id;
-
-        // ✅ Check if user exists in `admins` table
-        const { data: adminData, error: adminError } = await supabase
-            .from("admins")  
-            .select("id")
-            .eq("id", userId)
-            .single();
-
-        if (adminData) {
-            console.log("Admin detected, redirecting...");
-            window.location.href = "https://studylocker-gg.netlify.app/adminDashboard";
-        } else {
-            console.log("Regular user detected, redirecting...");
-            window.location.href = "https://studylocker-gg.netlify.app/userDashboard";
-        }
+        console.log("Password reset email sent to:", email);
     }
 }
 
