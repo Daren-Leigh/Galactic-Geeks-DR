@@ -33,6 +33,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        console.log("📊 Forums Data:", data); // Log the fetched forums to check if data is returned
+
         forumList.innerHTML = ""; // Clear before appending
 
         if (!data || data.length === 0) {
@@ -93,5 +95,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // ✅ Load forums on page load
-    await loadForums();
+    loadForums(); // Call function directly without await
 });
