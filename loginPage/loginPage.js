@@ -9,16 +9,21 @@ console.log("Supabase initialized:", supabase);
 
 async function loginUser() {
     const email = document.getElementById("login-email").value.trim();
-    const password = document.getElementById("login-password").value;
+    const password = document.getElementById("login-password").value.trim();
 
     if (!email || !password) {
         showMessage("Please fill in both email and password.", "error");
         return;
     }
 
+    console.log("Email:", email);  // Debugging email
+    console.log("Password:", password);  // Debugging password
+
+    // Using signInWithPassword method instead of signIn
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
+        console.error("Login error:", error);  // Debugging the error
         showMessage("Login failed: " + error.message, "error");
         return;
     }
@@ -44,6 +49,7 @@ async function loginUser() {
         window.location.href = "https://studylocker-gg.netlify.app/userDashboard";
     }
 }
+
 
 async function forgotPassword() {
     const email = document.getElementById("forgot-password-email").value.trim();
