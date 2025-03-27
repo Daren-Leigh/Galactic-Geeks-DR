@@ -15,7 +15,36 @@
     <script src="loginPage.js" defer></script>
 </head>
 <body>
+
+    <div class="navbar">
+        <div class="logo"><a href="#">StudyLocker</a></div>
+        <ul class="links">
+          <li><a href="#">Training Material (PDFs)</a></li>
+          <li><a href="#">Course Enrollments</a></li>
+          <li><a href="#">Resources (PDFs)</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">About Us</a></li>
+        </ul>
+        <a href="./registerPage/registerPage.html" class="action_btn">Sign-Up</a>
+        <a href="./loginPage/loginPage.html" class="action_btn">Log-In</a>
+        <div class="toggle_btn">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </div>
+
+    <div class="dropdown_menu">
+        <li><a href="#">Training (PDF)</a></li>
+        <li><a href="#">Course Enrollments</a></li>
+        <li><a href="#">Resources</a></li>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="./loginPage/loginPage.html" class="action_btn">Log-In</a></li>
+      </div>
+
+      <div class="loginContainer">
     <div class="container">
+        
+
+      
         <h2>Login</h2>
  
         <div id="message-box"></div> <!-- Message Box for Errors/Success -->
@@ -31,6 +60,8 @@
  
         <p>Don't have an account? <a href="registerPage.html">Register</a></p>
     </div>
+
+</div>
  
     <!-- ✅ Load JavaScript LAST for performance -->
     <script type="module" src="loginPage.js"></script>
