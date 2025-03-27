@@ -110,8 +110,10 @@
             <button onclick="fetchNotifications()">
                 <img src="images/Screenshot (269).ico" alt="Notification">
             </button>
-            <button onclick="alert('User Profile Button clicked!')">
-                <img src="images/Screenshot (270).ico" alt="Profile">
+            <button      class="navbar">
+              <a href="userProfile.html">Profile</a>
+
+             <img src="images/Screenshot (270).ico" alt="Profile">
             </button>
         </div>
     </div>
@@ -527,10 +529,10 @@ function fetchGraphData() {
     alert("Fetching graph data...");
 
     // Define the URL of the API or server to fetch resource data
-    const apiUrl = "https://fsjyzxygoyuxetzkpolo.supabase.co";
+    const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
 
     // Fetch data from the API
-    fetch(apiUrl)
+    fetch(SUPABASE_URL)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
