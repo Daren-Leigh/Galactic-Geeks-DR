@@ -101,17 +101,23 @@
     <div class="header">
         <div>StudyLocker <img src="images/11910998_resized.png" alt="StudyLocker"></div>
         <div class="icons">
-            <button onclick="alert('Menu Button clicked!')">
-                <img src="images/Screenshot (267).ico" alt="Menu">
+            <button
+
+            class="navbar"> <a href="">Menu</a>
+
+             <img src="images/Screenshot (268).ico" alt="Email">
             </button>
-            <button onclick="alert('Email Button clicked!')">
-                <img src="images/Screenshot (268).ico" alt="Email">
+            <button  class="navbar"> <a href="index.html">Menu</a>
+
+              <img src="images/Screenshot (267).ico" alt="Menu">
             </button>
             <button onclick="fetchNotifications()">
                 <img src="images/Screenshot (269).ico" alt="Notification">
             </button>
-            <button onclick="alert('User Profile Button clicked!')">
-                <img src="images/Screenshot (270).ico" alt="Profile">
+            <button      class="navbar">
+              <a href="adminProfile.html">Profile</a>
+
+             <img src="images/Screenshot (270).ico" alt="Profile">
             </button>
         </div>
     </div>
@@ -142,7 +148,7 @@
       <div id="historyPopup" class="popup hidden">
         <div class="popup-header">
           <h2>History</h2>
-          <button id="closePopup">X</button>
+
         </div>
         <div class="popup-body">
           <h3>Deleted Resources</h3>
@@ -527,10 +533,10 @@ function fetchGraphData() {
     alert("Fetching graph data...");
 
     // Define the URL of the API or server to fetch resource data
-    const apiUrl = "https://fsjyzxygoyuxetzkpolo.supabase.co";
+    const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
 
     // Fetch data from the API
-    fetch(apiUrl)
+    fetch(SUPABASE_URL)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
