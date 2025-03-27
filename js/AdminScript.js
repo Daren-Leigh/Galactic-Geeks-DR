@@ -1,12 +1,14 @@
 // Import necessary libraries
 import { createClient } from '@supabase/supabase-js';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
-import Chart from 'chart.js/auto';
+import Chart from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js';
 
 const SUPABASE_URL = 'https://fsjyzxygoyuxetzkpolo.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzanl6eHlnb3l1eGV0emtwb2xvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjIwMjkyNCwiZXhwIjoyMDU3Nzc4OTI0fQ.XgpwK52aXIJNZtHUDgSfD1ThR186gNF7K_NQ0kobsuM';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // Initialize Apollo GraphQL Client
+
+// Create the Apollo client instance
 const apolloClient = new ApolloClient({
     uri: `${SUPABASE_URL}/graphql/v1`,
     cache: new InMemoryCache(),

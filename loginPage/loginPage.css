@@ -83,6 +83,11 @@ a {
     font-size: 1rem;
 }
 
+p a {
+    color: black;
+    text-decoration: none;
+}
+
 a:hover {
     color: #F3752B;
 }

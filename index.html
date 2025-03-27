@@ -16,12 +16,13 @@ body {
     font-family: Poppins, sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: #000;
-    background-image: url(images/pexels-i-clal-capoglu-cinal-202384677-29674192.jpg); 
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+    url(images/pexels-i-clal-capoglu-cinal-202384677-29674192.jpg);
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center center;
+    overflow: hidden;
 }
 
 li {
@@ -35,7 +36,7 @@ a {
 }
 
 a:hover {
-    color: orange;
+    color: #F3752B;
 }
 
 header {
@@ -72,7 +73,7 @@ header {
 }
 
 .action_btn {
-    background-color: orange;
+    background-color: #F3752B;
     color: #fff;
     padding: 0.5rem 1rem;
     border: none;
@@ -143,6 +144,81 @@ header {
     justify-content: center;
 }
 
+/* ****** WELCOME PARAGRAPH * ******/
+
+.welcome-section {
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.welcome-section .content {
+    color: #fff;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.welcome-section .content h1 {
+    font-size: 3rem;
+    max-width: 600px;
+}
+
+.welcome-section .content p {
+   font-weight: 300;
+   margin-top: 15px;
+   max-width: 600px;
+}
+
+/* ****** BUTTON * ******/
+
+button {
+    width: 100px;
+    padding: 15px 0;
+    text-align: center;
+    margin: 20px 0;
+    border-radius: 40px;
+    font-weight: bold;
+    border: 2px solid #F3752B;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    font-family: "Poppins", sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+span {
+    background-color: #F3752B;
+    height: 100%;
+    width: 0%;
+    border-radius: 40px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+    transition: 0.5s;
+}
+
+button:hover span {
+    width: 100%;
+}
+
+button:hover {
+    border: none;
+}
+
+.section {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 3em;
+    color: #fff;
+}
+
 /* ****** RESPONSIVE DESIGN * ******/
 
 @media (max-width: 992px) {
@@ -193,6 +269,17 @@ header {
             <li><a href="#">Contact Us</a></li>
             <li><a href="./loginPage/loginPage.html" class="action_btn">Log-In</a></li>
           </div>
+
+          <section class="welcome-section">
+            <div class="content">
+                <h1>Welcom to StudyLocker</h1>
+                <p>We're thrilled to have you here. Whether you are a student, employee or a community member, our platform is designed to help you
+                    you access the learning resources you need to succeed. From digital materials like PDF's and courses to mentorship and training slots, we at
+                    StudyLocker made it easy for users to request and discover resources that match your goal.
+                </p>
+                <button type="button"><span></span>Get Started</a></button>
+            </div>
+          </section> 
 
           <div class="copyright_footer">
             <p>&copy; All Rights Reserved | Created by Galactic Geeks</p>
