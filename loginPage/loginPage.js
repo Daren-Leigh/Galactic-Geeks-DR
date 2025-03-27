@@ -64,7 +64,7 @@ async function verifyOtp() {
 
         // ✅ Check if user exists in `admins` table
         const { data: adminData, error: adminError } = await supabase
-            .from("admins")  
+            .from("admins")
             .select("id")
             .eq("id", userId)
             .single();
