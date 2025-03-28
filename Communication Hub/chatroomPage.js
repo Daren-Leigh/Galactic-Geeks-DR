@@ -9,11 +9,38 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const urlParams = new URLSearchParams(window.location.search);
 const forum_id = urlParams.get("forum_id");
 
-document.addEventListener("DOMContentLoaded", () => {
-    const messagesList = document.getElementById("chat-messages");  // Ensure the correct ID
+document.addEventListener("DOMContentLoaded", async () => {
+    const messagesList = document.getElementById("chat-messages");  
     const messageInput = document.getElementById("message-input");
 
-    // ✅ Real-time subscription setup
+    let currentUsername = "User"; // Default if not found
+
+    // ✅ Fetch the authenticated user's username
+    async function fetchUsername() {
+        const { data: { user }, error } = await supabase.auth.getUser();
+
+        if (error || !user) {
+            console.error("❌ Error fetching authenticated user:", error?.message || "No user session");
+            return;
+        }
+
+        console.log("✅ User ID:", user.id); // Debugging: Check if user ID exists
+
+        const { data, error: userError } = await supabase
+            .from("profiles")  // Make sure "profiles" table exists
+            .select("username")
+            .eq("id", user.id)  // Make sure the column is named "id"
+            .single();
+
+        if (userError) {
+            console.error("❌ Error fetching username:", userError.message);
+        } else {
+            currentUsername = data?.username || "User";
+            console.log("✅ Logged in as:", currentUsername); // Debugging: Check if username is fetched
+        }
+    }
+
+    // ✅ Load chat messages
     async function loadChatMessages() {
         const { data, error } = await supabase
             .from("messages")
@@ -26,10 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Clear previous messages
-        messagesList.innerHTML = "";
+        messagesList.innerHTML = ""; // Clear previous messages
 
-        // Append new messages
         data.forEach((message) => {
             const messageItem = document.createElement("div");
             messageItem.classList.add("message");
@@ -40,38 +65,50 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ✅ Real-time channel subscription
+    // ✅ Real-time message subscription
     function subscribeToNewMessages() {
-        const channel = supabase
+        supabase
             .channel("chat-room-" + forum_id)
             .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, payload => {
                 console.log("New message inserted:", payload.new);
-                loadChatMessages();  // Reload messages after new message insert
+                loadChatMessages();
             })
             .subscribe();
     }
 
-    // ✅ Send a new message
+    // ✅ Send a message with the actual username
     async function sendMessage() {
-        const content = messageInput.value;
+        const content = messageInput.value.trim();
         if (!content) return;
+
+        console.log("🔹 Sending message as:", currentUsername); // Debugging
 
         const { error } = await supabase
             .from("messages")
-            .insert([{ forum_id, username: "User", content }]); // Replace "User" with actual username logic
+            .insert([{ forum_id, username: currentUsername, content }]);
 
         if (error) {
             console.error("❌ Error sending message:", error.message);
         } else {
             messageInput.value = ""; // Clear input after sending
-            loadChatMessages(); // Reload messages after sending a new one
+            loadChatMessages();
         }
     }
 
-    // ✅ Load messages and set up real-time subscription on page load
+    // ✅ Back button functionality
+function goBack() {
+    window.location.href = "forumPage.html"; // Replace with your actual forum page URL
+}
+
+
+    // ✅ Fetch username, load messages, and set up real-time subscription
+    await fetchUsername();
     loadChatMessages();
     subscribeToNewMessages();
 
-    // ✅ Send message on button click
-    document.getElementById("send-button").onclick = sendMessage;  // Ensure this matches the HTML ID
+    // ✅ Attach event listener for sending messages
+    document.getElementById("send-button").onclick = sendMessage;
+
+    // ✅ Attach event listener for back button
+    document.getElementById("back-button").onclick = goBack;
 });
