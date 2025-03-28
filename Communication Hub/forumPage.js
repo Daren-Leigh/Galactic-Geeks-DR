@@ -70,6 +70,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         createForumPopup.classList.add("hidden");
     });
 
+    // ✅ Back to Dashboard button functionality
+    document.getElementById("back-to-dashboard-btn").addEventListener("click", function() {
+        window.location.href = "https://studylocker-gg.netlify.app/userdashboard";
+    });
+    
+
+
     // ✅ Handle New Forum Creation
     submitForumBtn.addEventListener("click", async () => {
         const title = forumTitleInput.value.trim();
